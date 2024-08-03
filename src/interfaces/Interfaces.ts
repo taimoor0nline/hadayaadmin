@@ -1,5 +1,3 @@
-// src/interfaces.ts
-
 export interface Money {
     amount: string;
     currency_code: string;
@@ -47,6 +45,12 @@ export interface Money {
     name: string;
     country_code: string;
     province_code: string | null;
+    company:string | null;
+  }
+
+  export interface NoteAttribute {
+    name: string;
+    value: string;
   }
   
   export interface Customer {
@@ -59,6 +63,7 @@ export interface Money {
     updated_at: string;
     state: string;
     note: string | null;
+    note_attributes: NoteAttribute[];
     verified_email: boolean;
     multipass_identifier: string | null;
     tax_exempt: boolean;

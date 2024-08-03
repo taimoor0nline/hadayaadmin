@@ -1,35 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { getOrders } from '../services/shopifyService';
-import { Customer, Order } from '../interfaces/Interfaces';
+import { getCustomers, CustomersResponse } from '../services/shopifyService';
 import { useNavigate } from 'react-router-dom';
+import { Customer } from '../interfaces/Interfaces';
 
 const CustomerList: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [nextPageInfo, setNextPageInfo] = useState<string | null>(null);
+  const [previousPageInfo, setPreviousPageInfo] = useState<string | null>(null);
   const navigate = useNavigate();
+  const customersPerPage = 10;
+
+  const fetchCustomers = async (pageInfo: string | null = null) => {
+    try {
+      const response: CustomersResponse = await getCustomers(customersPerPage, pageInfo);
+      console.log('Customers Response:', response); // Log the response
+      setCustomers(response.customers || []); // Ensure customers are set properly
+      setNextPageInfo(response.nextPageInfo || null);
+      setPreviousPageInfo(response.previousPageInfo || null);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const orders: Order[] = await getOrders();
-        const uniqueCustomers = orders.reduce((acc: Customer[], order) => {
-          const customer = order.customer;
-          if (customer && !acc.find((c) => c.id === customer.id)) {
-            acc.push(customer);
-          }
-          return acc;
-        }, []);
-        setCustomers(uniqueCustomers);
-      } catch (error) {
-        console.error('Error fetching customers:', error);
-      }
-    };
-
-    fetchOrders();
+    fetchCustomers();
   }, []);
+
+  const handlePreviousPage = () => {
+    if (previousPageInfo) {
+      fetchCustomers(previousPageInfo);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (nextPageInfo) {
+      fetchCustomers(nextPageInfo);
+    }
+  };
 
   return (
     <div className="container mt-4">
-      <h1>Customer List extracted from Shopify orders</h1>
+      <h1>Customers</h1>
       <table className="table table-striped">
         <thead>
           <tr>
@@ -57,6 +68,22 @@ const CustomerList: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <div className="d-flex justify-content-between">
+        <button 
+          className="btn btn-secondary"
+          onClick={handlePreviousPage}
+          disabled={!previousPageInfo}
+        >
+          Previous
+        </button>
+        <button 
+          className="btn btn-secondary"
+          onClick={handleNextPage}
+          disabled={!nextPageInfo}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

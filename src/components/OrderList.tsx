@@ -1,24 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { getOrders } from '../services/shopifyService';
+import { getOrders, OrdersResponse } from '../services/shopifyService';
 import { useNavigate } from 'react-router-dom';
 import { Order } from '../interfaces/Interfaces';
 
 const OrderList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [nextPageInfo, setNextPageInfo] = useState<string | null>(null);
+  const [previousPageInfo, setPreviousPageInfo] = useState<string | null>(null);
   const navigate = useNavigate();
+  const ordersPerPage = 10;
+
+  const fetchOrders = async (pageInfo: string | null = null) => {
+    try {
+      const response: OrdersResponse = await getOrders(ordersPerPage, pageInfo);
+      console.log('Orders Response:', response); // Log the response
+      setOrders(response.orders || []); // Ensure orders are set properly
+      setNextPageInfo(response.nextPageInfo || null);
+      setPreviousPageInfo(response.previousPageInfo || null);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const orders: Order[] = await getOrders();
-        setOrders(orders);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-
     fetchOrders();
   }, []);
+
+  const handlePreviousPage = () => {
+    if (previousPageInfo) {
+      fetchOrders(previousPageInfo);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (nextPageInfo) {
+      fetchOrders(nextPageInfo);
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -50,6 +68,22 @@ const OrderList: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <div className="d-flex justify-content-between">
+        <button 
+          className="btn btn-secondary"
+          onClick={handlePreviousPage}
+          disabled={!previousPageInfo}
+        >
+          Previous
+        </button>
+        <button 
+          className="btn btn-secondary"
+          onClick={handleNextPage}
+          disabled={!nextPageInfo}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

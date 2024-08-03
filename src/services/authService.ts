@@ -10,4 +10,10 @@ const login = async (email: string, password: string) => {
   }
 };
 
-export { login };
+const logout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login'; // Redirect to login page
+};
+
+
+export { login,logout };

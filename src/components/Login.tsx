@@ -12,7 +12,7 @@ const Login: React.FC = () => {
     try {
       const result = await login(email, password);
       localStorage.setItem('token', result.token);
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('Login failed', error);
       alert('Login failed. Please check your credentials and try again.');
