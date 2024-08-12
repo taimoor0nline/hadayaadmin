@@ -1,18 +1,18 @@
 import React from 'react';
-import { Navbar } from 'react-bootstrap';
 import Sidebar from '../components/Sidebar';
-import DeliverSlotTable from '../components/DeliverSlotTable';
+import Navbar from '../components/Navbar';
+import OrderList from '../components/OrderList';
 
-const DeliverSlotPage: React.FC = () => {
+const OrderListPage: React.FC = () => {
   return (
     <div className="d-flex">
       <Sidebar />
       <div className="flex-grow-1">
         <Navbar />
-        <DeliverSlotTable />
+        <OrderList />
       </div>
     </div>
   );
 };
 
-export default DeliverSlotPage;
+export default OrderListPage;

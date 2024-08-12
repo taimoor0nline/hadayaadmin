@@ -1,240 +1,230 @@
 import React, { useEffect, useState } from 'react';
+import { getOrderById, updateOrderStatus } from '../services/orderService';
+import { IOrder } from '../interfaces/Order';
+import { Button, Modal, Form, Accordion, Table } from 'react-bootstrap';
 import '../styles/order-detail.css';
-import { useParams } from 'react-router-dom';
-import { getOrderById, updateOrderStatus } from '../services/shopifyService';
-import { Order } from '../interfaces/Interfaces';
-import { Accordion, Card, Button, Modal, Form } from 'react-bootstrap';
 
-const OrderDetail: React.FC = () => {
-  const { orderId } = useParams<{ orderId: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
+interface OrderDetailProps {
+  orderId: string;
+}
+
+const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
+  const [order, setOrder] = useState<IOrder | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [newStatus, setNewStatus] = useState('');
+  const [newStatus, setNewStatus] = useState<string>('');
 
   useEffect(() => {
-    if (orderId) {
-      const fetchOrderDetail = async () => {
-        try {
-          const order = await getOrderById(orderId);
-          setOrder(order);
-        } catch (error) {
-          console.error('Error fetching order detail:', error);
-        }
-      };
-
-      fetchOrderDetail();
-    }
+    const fetchOrder = async () => {
+      if (orderId) {
+        const data = await getOrderById(orderId);
+        setOrder(data);
+      }
+    };
+    fetchOrder();
   }, [orderId]);
 
   const handleStatusChange = async () => {
-    if (!order) return;
-
-    try {
+    if (order && newStatus) {
       await updateOrderStatus(order.id.toString(), newStatus);
-      setOrder({ ...order, fulfillment_status: newStatus });
-      setShowModal(false);
-    } catch (error) {
-      console.error('Error updating order status:', error);
+      setOrder({ ...order, status: newStatus });
     }
+    setShowModal(false);
   };
 
-  if (!order) {
-    return <div className="container mt-5"><p>Loading order details...</p></div>;
-  }
+  const printOrder = () => {
+    window.print();
+  };
+
+  if (!order) return <div>Loading...</div>;
 
   return (
-    <div className="container mt-5">
-      <div className="card mb-4">
-        <div className="card-header">
-          <h2>Order ID: {order.id}</h2>
-          <Button variant="primary" onClick={() => setShowModal(true)}>Update Order Status</Button>
-        </div>
-        <div className="card-body">
-          <Accordion defaultActiveKey="0">
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>Customer Information</Accordion.Header>
-              <Accordion.Body>
-                <div className="mb-3">
-                  <strong>Name:</strong> {order.customer?.first_name} {order.customer?.last_name}
-                </div>
-                <div className="mb-3">
-                  <strong>Email:</strong> {order.customer?.email || 'N/A'}
-                </div>
-                <div className="mb-3">
-                  <strong>Phone:</strong> {order.customer?.phone || 'N/A'}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="1">
-              <Accordion.Header>Order Information</Accordion.Header>
-              <Accordion.Body>
-                <div className="mb-3">
-                  <strong>Order Number:</strong> {order.order_number}
-                </div>
-                <div className="mb-3">
-                  <strong>Confirmation Number:</strong> {order.confirmation_number}
-                </div>
-                <div className="mb-3">
-                  <strong>Created At:</strong> {new Date(order.created_at).toLocaleString()}
-                </div>
-                <div className="mb-3">
-                  <strong>Updated At:</strong> {new Date(order.updated_at).toLocaleString()}
-                </div>
-                <div className="mb-3">
-                  <strong>Total Price:</strong> {order.current_total_price}
-                </div>
-                <div className="mb-3">
-                  <strong>Order Status:</strong> {order.fulfillment_status || 'Pending'}
-                </div>
-                <div className="mb-3">
-                  <strong>Financial Status:</strong> {order.financial_status}
-                </div>
-                <div className="mb-3">
-                  <strong>Landing Site:</strong> {order.landing_site}
-                </div>
-                <div className="mb-3">
-                  <strong>Currency:</strong> {order.currency}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="2">
-              <Accordion.Header>Billing Address</Accordion.Header>
-              <Accordion.Body>
-                <div className="mb-3">
-                  <strong>Name:</strong> {order.billing_address.name}
-                </div>
-                <div className="mb-3">
-                  <strong>Address 1:</strong> {order.billing_address.address1}
-                </div>
-                <div className="mb-3">
-                  <strong>Address 2:</strong> {order.billing_address.address2 || 'N/A'}
-                </div>
-                <div className="mb-3">
-                  <strong>City:</strong> {order.billing_address.city}
-                </div>
-                <div className="mb-3">
-                  <strong>Country:</strong> {order.billing_address.country}
-                </div>
-                <div className="mb-3">
-                  <strong>Province:</strong> {order.billing_address.province || 'N/A'}
-                </div>
-                <div className="mb-3">
-                  <strong>ZIP:</strong> {order.billing_address.zip || 'N/A'}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="3">
-              <Accordion.Header>Shipping Address</Accordion.Header>
-              <Accordion.Body>
-                <div className="mb-3">
-                  <strong>Name:</strong> {order.shipping_address.name}
-                </div>
-                <div className="mb-3">
-                  <strong>Address 1:</strong> {order.shipping_address.address1}
-                </div>
-                <div className="mb-3">
-                  <strong>Address 2:</strong> {order.shipping_address.address2 || 'N/A'}
-                </div>
-                <div className="mb-3">
-                  <strong>City:</strong> {order.shipping_address.city}
-                </div>
-                <div className="mb-3">
-                  <strong>Country:</strong> {order.shipping_address.country}
-                </div>
-                <div className="mb-3">
-                  <strong>Province:</strong> {order.shipping_address.province || 'N/A'}
-                </div>
-                <div className="mb-3">
-                  <strong>ZIP:</strong> {order.shipping_address.zip || 'N/A'}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="4">
-              <Accordion.Header>Order Notes</Accordion.Header>
-              <Accordion.Body>
-                <ul className="list-group mb-3">
-                  {order.note_attributes.map((note, index) => (
-                    <li key={index} className="list-group-item">
-                      <strong>{note.name}:</strong> {note.value}
-                    </li>
-                  ))}
-                </ul>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="5">
-              <Accordion.Header>Items</Accordion.Header>
-              <Accordion.Body>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Product</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.line_items.map(item => (
-                      <tr key={item.id}>
-                        <td>{item.title}</td>
-                        <td>{item.quantity}</td>
-                        <td>{item.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="mb-3">
-                  <strong>Total Items Price:</strong> {order.subtotal_price}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="6">
-              <Accordion.Header>Tax Lines</Accordion.Header>
-              <Accordion.Body>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Title</th>
-                      <th scope="col">Price</th>
-                      <th scope="col">Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.tax_lines.map((tax, index) => (
-                      <tr key={index}>
-                        <td>{tax.title}</td>
-                        <td>{tax.price}</td>
-                        <td>{tax.rate}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="mb-3">
-                  <strong>Total Tax:</strong> {order.total_tax}
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="7">
-              <Accordion.Header>Payment Gateway</Accordion.Header>
-              <Accordion.Body>
-                <ul className="list-group mb-3">
-                  {order.payment_gateway_names.map((gateway, index) => (
-                    <li key={index} className="list-group-item">
-                      {gateway}
-                    </li>
-                  ))}
-                </ul>
-              </Accordion.Body>
-            </Accordion.Item>
-          </Accordion>
-        </div>
+    <div className="order-detail container mt-4">
+      <div className="d-flex justify-content-between align-items-center">
+        <h2>Order Detail for Order #{order.orderNumber}</h2>
+        <Button variant="secondary" onClick={printOrder}>
+          Print
+        </Button>
       </div>
+
+      <Accordion defaultActiveKey="0" className="mt-4">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Order Details</Accordion.Header>
+          <Accordion.Body>
+            <Table bordered size="sm">
+              <tbody>
+                <tr>
+                  <td><strong>Order ID:</strong></td>
+                  <td>{order.id}</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify Order ID:</strong></td>
+                  <td>{order.shopifyOrderId}</td>
+                </tr>
+                <tr>
+                  <td><strong>Status:</strong></td>
+                  <td>{order.status}</td>
+                </tr>
+                <tr>
+                  <td><strong>Subtotal Price:</strong></td>
+                  <td>{order.currentSubtotalPrice} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Discounts:</strong></td>
+                  <td>{order.currentTotalDiscounts} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Price:</strong></td>
+                  <td>{order.currentTotalPrice} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Tax:</strong></td>
+                  <td>{order.currentTotalTax} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Financial Status:</strong></td>
+                  <td>{order.financialStatus}</td>
+                </tr>
+                <tr>
+                  <td><strong>Fulfillment Status:</strong></td>
+                  <td>{order.fulfillmentStatus || "Not fulfilled"}</td>
+                </tr>
+                <tr>
+                  <td><strong>Created At:</strong></td>
+                  <td>{new Date(order.createdAt).toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td><strong>Updated At:</strong></td>
+                  <td>{new Date(order.updatedAt).toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td><strong>Contact Email:</strong></td>
+                  <td>{order.contactEmail}</td>
+                </tr>
+                <tr>
+                  <td><strong>Phone:</strong></td>
+                  <td>{order.phone || "N/A"}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
+
+        <Accordion.Item eventKey="1">
+          <Accordion.Header>Sender Details</Accordion.Header>
+          <Accordion.Body>
+            <Table bordered size="sm">
+              <tbody>
+                <tr>
+                  <td><strong>Customer ID:</strong></td>
+                  <td>{order.sender.shopifyCustomerId}</td>
+                </tr>
+                <tr>
+                  <td><strong>Name:</strong></td>
+                  <td>{order.sender.firstName} {order.sender.lastName}</td>
+                </tr>
+                <tr>
+                  <td><strong>Email:</strong></td>
+                  <td>{order.sender.email}</td>
+                </tr>
+                <tr>
+                  <td><strong>Phone:</strong></td>
+                  <td>{order.sender.phone || "N/A"}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
+
+        <Accordion.Item eventKey="2">
+          <Accordion.Header>Recipients</Accordion.Header>
+          <Accordion.Body>
+            {order.recipients.map((recipient, index) => (
+              <div key={recipient.id} className="mb-3">
+                <Table bordered size="sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>Recipient #{index + 1}:</strong></td>
+                      <td>{recipient.recipientName}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Phone:</strong></td>
+                      <td>{recipient.recipientPhone}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Address:</strong></td>
+                      <td>{recipient.recipientAddress}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Delivery Slot:</strong></td>
+                      <td>{recipient.deliverySlot}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Delivery Status:</strong></td>
+                      <td>{recipient.deliveryStatus}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Message:</strong></td>
+                      <td>{recipient.message}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            ))}
+          </Accordion.Body>
+        </Accordion.Item>
+
+        <Accordion.Item eventKey="3">
+          <Accordion.Header>Items</Accordion.Header>
+          <Accordion.Body>
+            <Table bordered size="sm">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>SKU</th>
+                  <th>Vendor</th>
+                  <th>Fulfillment Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map(item => (
+                  <tr key={item.id}>
+                    <td>{item.title}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.price} {order.currency}</td>
+                    <td>{item.sku || "N/A"}</td>
+                    <td>{item.vendor}</td>
+                    <td>{item.fulfillmentStatus || "Not fulfilled"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
+
+        <Accordion.Item eventKey="4">
+          <Accordion.Header>Area and Zone</Accordion.Header>
+          <Accordion.Body>
+            <Table bordered size="sm">
+              <tbody>
+                <tr>
+                  <td><strong>Area:</strong></td>
+                  <td>{order.area.name}</td>
+                </tr>
+                <tr>
+                  <td><strong>Zone:</strong></td>
+                  <td>{order.area.zone.name}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+
+      <Button variant="primary" onClick={() => setShowModal(true)} className="mt-4">
+        Update Status
+      </Button>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
@@ -242,19 +232,12 @@ const OrderDetail: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="orderStatus">
-              <Form.Label>Order Status</Form.Label>
-              <Form.Control
-                as="select"
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
-              >
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="dispatched">Dispatched</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+            <Form.Group controlId="status">
+              <Form.Label>New Status</Form.Label>
+              <Form.Control as="select" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+                <option value="unfulfilled">Unfulfilled</option>
+                <option value="fulfilled">Fulfilled</option>
+                <option value="canceled">Canceled</option>
               </Form.Control>
             </Form.Group>
           </Form>

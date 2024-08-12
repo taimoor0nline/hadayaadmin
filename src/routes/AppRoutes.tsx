@@ -1,15 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import OrderList from '../components/OrderList';
 import OrderDetailPage from '../pages/OrderDetailPage';
-import CustomerList from '../components/Customer';
-import CustomerDetail from '../components/CustomerDetail';
 import CustomerPage from '../pages/CustomerPage';
 import CustomerDetailPage from '../pages/CustomerDetailPage';
 import HomePage from '../pages/HomePage';
-import OrderPage from '../pages/OrderPage';
+import OrderPage from '../pages/OrderDetailPage';
 import LoginPage from '../pages/LoginPage';
-import DeliverSlotPage from '../pages/DeliverSlotPage'; // Import the new page
+import DeliverySlotPage from '../pages/DeliverySlotPage';
+import OrderListPage from '../pages/OrderListPage';
+import ZonePage from '../pages/ZonePage';
+import AreaPage from '../pages/AreaPage';
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -21,13 +21,16 @@ const AppRoutes: React.FC = () => (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-      <Route path="/orders" element={<PrivateRoute><OrderPage /></PrivateRoute>} />
-      <Route path="/orders/:orderId" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />
+      <Route path="/orders/list" element={<PrivateRoute><OrderListPage/></PrivateRoute>} />  {/* OrderPage should map to the order listing */}
+      <Route path="/orders/detail/:orderId" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />  {/* OrderDetailPage should map to order detail */}
       <Route path="/customers" element={<PrivateRoute><CustomerPage /></PrivateRoute>} />
       <Route path="/customers/:customerId" element={<PrivateRoute><CustomerDetailPage /></PrivateRoute>} />
-      <Route path="/delivery-slot" element={<PrivateRoute><DeliverSlotPage /></PrivateRoute>} /> {/* Add the new route */}
+      <Route path="/delivery-slot" element={<PrivateRoute><DeliverySlotPage /></PrivateRoute>} />  
+      <Route path="/zone" element={<PrivateRoute><ZonePage /></PrivateRoute>} /> 
+      <Route path="/area" element={<PrivateRoute><AreaPage /></PrivateRoute>} />   
     </Routes>
   </Router>
 );
+
 
 export default AppRoutes;

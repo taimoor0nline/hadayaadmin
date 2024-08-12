@@ -1,6 +1,6 @@
-export interface PagedResult<T> {
-    totalItems: number;
-    queryResult?: string;
-    items: T[];
-  }
-  
+export interface IPagedResult<T> {
+  data: T[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}

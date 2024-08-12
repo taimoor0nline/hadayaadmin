@@ -13,7 +13,6 @@ const apiService = axios.create({
   },
 });
 
-// You can add interceptors if needed
 apiService.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');

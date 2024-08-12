@@ -1,91 +1,141 @@
-import React, { useEffect, useState } from 'react';
-import { getOrders, OrdersResponse } from '../services/shopifyService';
-import { useNavigate } from 'react-router-dom';
-import { Order } from '../interfaces/Interfaces';
+import React, { useState, useEffect } from 'react';
+import Pagination from '../components/Pagination';
+import { IOrder } from '../interfaces/Order';
+import { getOrders } from '../services/orderService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
-const OrderList: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [nextPageInfo, setNextPageInfo] = useState<string | null>(null);
-  const [previousPageInfo, setPreviousPageInfo] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const ordersPerPage = 10;
-
-  const fetchOrders = async (pageInfo: string | null = null) => {
-    try {
-      const response: OrdersResponse = await getOrders(ordersPerPage, pageInfo);
-      console.log('Orders Response:', response); // Log the response
-      setOrders(response.orders || []); // Ensure orders are set properly
-      setNextPageInfo(response.nextPageInfo || null);
-      setPreviousPageInfo(response.previousPageInfo || null);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    }
-  };
+const OrderListPage: React.FC = () => {
+  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState('zone');
+  const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage]);
 
-  const handlePreviousPage = () => {
-    if (previousPageInfo) {
-      fetchOrders(previousPageInfo);
-    }
+  const fetchOrders = async () => {
+    const searchParams = {
+      [searchField]: searchValue,
+    };
+
+    const result = await getOrders({
+      page: currentPage,
+      limit: 10,
+      ...searchParams,
+    });
+
+    setOrders(result.data);
+    setTotalPages(result.totalPages);
   };
 
-  const handleNextPage = () => {
-    if (nextPageInfo) {
-      fetchOrders(nextPageInfo);
-    }
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchOrders();
+  };
+
+  const handleFieldChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSearchField(e.target.value);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
-    <div className="container mt-4">
-      <h1>Orders</h1>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer Name</th>
-            <th>Total Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{`${order.customer.first_name} ${order.customer.last_name}`}</td>
-              <td>{order.current_total_price}</td>
-              <td>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => navigate(`/orders/${order.id}`)}
-                >
-                  View Details
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="d-flex justify-content-between">
-        <button 
-          className="btn btn-secondary"
-          onClick={handlePreviousPage}
-          disabled={!previousPageInfo}
-        >
-          Previous
-        </button>
-        <button 
-          className="btn btn-secondary"
-          onClick={handleNextPage}
-          disabled={!nextPageInfo}
-        >
-          Next
-        </button>
+    <div className="d-flex">
+      <div className="flex-grow-1">
+        <div className="container mt-4">
+          <div className="card">
+            <div className="card-header">
+              <h2>Order List</h2>
+            </div>
+            <div className="card-body">
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <select
+                    className="form-control"
+                    value={searchField}
+                    onChange={handleFieldChange}
+                  >
+                    <option value="zone">Zone</option>
+                    <option value="area">Area</option>
+                    <option value="senderPhone">Sender Phone</option>
+                    <option value="senderEmail">Sender Email</option>
+                    <option value="receiverPhone">Receiver Phone</option>
+                    <option value="shopifyOrderId">Order ID</option>
+                  </select>
+                </div>
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={searchValue}
+                    onChange={handleInputChange}
+                    placeholder={`Enter ${searchField}`}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Zone</th>
+                    <th>Area</th>
+                    <th>Sender Name</th>
+                    <th>Sender Email</th>
+                    <th>Sender Phone</th>
+                    <th>Receiver Phone</th>
+                    <th>Shopify Order ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order, index) => (
+                    <tr key={order.id}>
+                      <td>{(currentPage - 1) * 10 + index + 1}</td>
+                      <td>{order.area.zone.name}</td>
+                      <td>{order.area.name}</td>
+                      <td>{`${order.sender.firstName} ${order.sender.lastName}`}</td>
+                      <td>{order.sender.email || 'N/A'}</td>
+                      <td>{order.sender.phone}</td>
+                      <td>{order.recipients[0]?.recipientPhone || 'N/A'}</td>
+                      <td>{order.shopifyOrderId}</td>
+                      <td>{order.status}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() => window.location.href = `/orders/detail/${order.id}`}
+                        >
+                          <FontAwesomeIcon icon={faEye} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default OrderList;
+export default OrderListPage;

@@ -1,7 +1,8 @@
 import React from 'react';
 import { House, DashCircle, ShieldFillExclamation } from 'react-bootstrap-icons';
-import { BsFillPeopleFill, BsChatDotsFill, BsGearFill } from 'react-icons/bs';
+import { BsFillPeopleFill, BsChatDotsFill, BsGearFill, BsGridFill } from 'react-icons/bs';
 import { BiLogOut } from 'react-icons/bi';
+import { MdLocationCity } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { logout } from '../services/authService';
 
@@ -21,13 +22,21 @@ const Sidebar: React.FC = () => {
           <BsGearFill className="me-2" />
           Delivery Slots
         </Link>
-        <Link to="/orders" className="nav-link custom-nav-link">
+        <Link to="/orders/list" className="nav-link custom-nav-link">
           <BsChatDotsFill className="me-2" />
           Orders
         </Link>
         <Link to="/customers" className="nav-link custom-nav-link">
           <DashCircle className="me-2" />
           Customers
+        </Link>
+        <Link to="/zone" className="nav-link custom-nav-link">
+          <BsGridFill className="me-2" />
+          Zones
+        </Link>
+        <Link to="/area" className="nav-link custom-nav-link">
+          <MdLocationCity className="me-2" />
+          Areas
         </Link>
         <Link to="/login" className="nav-link custom-nav-link" onClick={logout}>
           <BiLogOut className="me-2" />

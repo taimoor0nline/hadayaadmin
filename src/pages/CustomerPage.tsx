@@ -2,7 +2,7 @@ import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import Order from '../components/OrderList';
-import Customer from '../components/Customer';
+import Customer from '../components/CustomerList';
 
 const CustomerPage: React.FC = () => {
   return (
