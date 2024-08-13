@@ -9,6 +9,6 @@ export interface IDeliverySlot {
 }
 
 export enum IDeliverySlotStatus {
-  ACTIVE = 'Active',
-  INACTIVE = 'Inactive',
+  Active = 'Active',
+  Inactive = 'Inactive',
 }

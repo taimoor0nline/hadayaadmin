@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from '../components/Pagination';
-import { IOrder } from '../interfaces/Order';
 import { getOrders } from '../services/orderService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import { IMappedOrder } from '../interfaces/Order';
 
 const OrderListPage: React.FC = () => {
-  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [orders, setOrders] = useState<IMappedOrder[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchField, setSearchField] = useState('zone');
@@ -20,14 +20,24 @@ const OrderListPage: React.FC = () => {
     const searchParams = {
       [searchField]: searchValue,
     };
-
+  
     const result = await getOrders({
       page: currentPage,
       limit: 10,
       ...searchParams,
     });
 
-    setOrders(result.data);
+    const mappedOrders: IMappedOrder[] = result.data.map((order: any) => ({
+      shopifyOrderId: order.shopifyOrderId || 'N/A',
+      zoneName: order.zoneName || 'N/A',
+      areaName: order.areaName || 'N/A',
+      senderName: order.senderName || 'N/A',
+      senderEmail: order.senderEmail || 'N/A',
+      senderPhone: order.senderPhone || 'N/A',
+      recipientPhone: order.recipientPhone || 'N/A',
+      status: order.status || 'N/A',
+    }));
+    setOrders(mappedOrders);
     setTotalPages(result.totalPages);
   };
 
@@ -68,7 +78,7 @@ const OrderListPage: React.FC = () => {
                     <option value="area">Area</option>
                     <option value="senderPhone">Sender Phone</option>
                     <option value="senderEmail">Sender Email</option>
-                    <option value="receiverPhone">Receiver Phone</option>
+                    <option value="recipientPhone">Receiver Phone</option>
                     <option value="shopifyOrderId">Order ID</option>
                   </select>
                 </div>
@@ -107,20 +117,20 @@ const OrderListPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {orders.map((order, index) => (
-                    <tr key={order.id}>
+                    <tr key={order.shopifyOrderId}>
                       <td>{(currentPage - 1) * 10 + index + 1}</td>
-                      <td>{order.area.zone.name}</td>
-                      <td>{order.area.name}</td>
-                      <td>{`${order.sender.firstName} ${order.sender.lastName}`}</td>
-                      <td>{order.sender.email || 'N/A'}</td>
-                      <td>{order.sender.phone}</td>
-                      <td>{order.recipients[0]?.recipientPhone || 'N/A'}</td>
+                      <td>{order.zoneName}</td>
+                      <td>{order.areaName}</td>
+                      <td>{order.senderName}</td>
+                      <td>{order.senderEmail}</td>
+                      <td>{order.senderPhone}</td>
+                      <td>{order.recipientPhone}</td>
                       <td>{order.shopifyOrderId}</td>
                       <td>{order.status}</td>
                       <td>
                         <button
                           className="btn btn-sm btn-primary"
-                          onClick={() => window.location.href = `/orders/detail/${order.id}`}
+                          onClick={() => window.location.href = `/orders/detail/${order.shopifyOrderId}`}
                         >
                           <FontAwesomeIcon icon={faEye} />
                         </button>

@@ -51,9 +51,9 @@ const DeliverySlot: React.FC = () => {
       startTime: '',
       endTime: '',
       thresholdMinutes: 0,
-      status: IDeliverySlotStatus.ACTIVE
+      status: IDeliverySlotStatus.Active
     });
-    openModal(); // Open the modal when creating a new slot
+    openModal();
   };
 
   const openModal = () => {
@@ -179,11 +179,11 @@ const DeliverySlot: React.FC = () => {
                 <label>Status</label>
                 <select
                   className="form-control"
-                  value={selectedSlot?.status || IDeliverySlotStatus.ACTIVE}
+                  value={selectedSlot?.status || IDeliverySlotStatus.Active}
                   onChange={(e) => setSelectedSlot({ ...selectedSlot!, status: e.target.value as IDeliverySlotStatus })}
                 >
-                  <option value={IDeliverySlotStatus.ACTIVE}>Active</option>
-                  <option value={IDeliverySlotStatus.INACTIVE}>Inactive</option>
+                  <option value={IDeliverySlotStatus.Active}>Active</option>
+                  <option value={IDeliverySlotStatus.Inactive}>Inactive</option>
                 </select>
               </div>
             </div>

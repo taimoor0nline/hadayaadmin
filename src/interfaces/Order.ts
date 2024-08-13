@@ -1,6 +1,17 @@
 import { IArea } from "./Area";
 import { ICustomer } from "./Customer";
 
+export interface IMappedOrder {
+  shopifyOrderId: string;
+  zoneName: string;
+  areaName: string;
+  senderName: string;
+  senderEmail: string;
+  senderPhone: string;
+  recipientPhone: string;
+  status: string;
+}
+
 export interface IOrder {
   id: number;
   shopifyOrderId: string;

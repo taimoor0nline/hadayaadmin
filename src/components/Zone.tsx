@@ -2,18 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from 'bootstrap';
 import { getZones, createZone, updateZone, deleteZone } from '../services/zoneService';
 import { IZone } from '../interfaces/Zone';
+import Pagination from './Pagination'; // Ensure Pagination is imported
+import { FaEdit, FaTrash } from 'react-icons/fa'; // Import icons
 
 const Zone: React.FC = () => {
   const [zones, setZones] = useState<IZone[]>([]);
   const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
-    fetchZones();
-  }, []);
+    fetchZones(currentPage);
+  }, [currentPage]);
 
-  const fetchZones = async () => {
-    const result = await getZones();
-    setZones(result);
+  const fetchZones = async (page: number) => {
+    try {
+      const result = await getZones(page, searchText);
+      setZones(result.data);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error('Error fetching zones:', error);
+      setZones([]);
+      setTotalPages(1);
+    }
   };
 
   const handleSelectZone = (zone: IZone) => {
@@ -27,14 +39,14 @@ const Zone: React.FC = () => {
     } else {
       await createZone(selectedZone!);
     }
-    fetchZones();
+    fetchZones(currentPage);
     setSelectedZone(null);
     closeModal();
   };
 
   const handleDelete = async (id: number) => {
     await deleteZone(id);
-    fetchZones();
+    fetchZones(currentPage);
   };
 
   const handleCreateNew = () => {
@@ -60,11 +72,30 @@ const Zone: React.FC = () => {
     }
   };
 
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchZones(1);
+  };
+
   return (
     <div className="container mt-4">
       <div className="card">
         <div className="card-header">
           <h2>Zones</h2>
+          <div className="row">
+            <div className="col-md-10">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search by Zone name"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           <button className="btn btn-primary mb-3" onClick={handleCreateNew}>Create Zone</button>
@@ -82,13 +113,22 @@ const Zone: React.FC = () => {
                   <td>{index + 1}</td>
                   <td>{zone.name}</td>
                   <td>
-                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectZone(zone)}>Edit</button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(zone.id!)}>Delete</button>
+                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectZone(zone)}>
+                      <FaEdit />
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(zone.id!)}>
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page: number) => setCurrentPage(page)} // Explicitly define the type as number
+          />
         </div>
       </div>
 

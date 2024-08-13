@@ -4,25 +4,44 @@ import { getAreas, createArea, updateArea, deleteArea } from '../services/areaSe
 import { getZones } from '../services/zoneService';
 import { IArea } from '../interfaces/Area';
 import { IZone } from '../interfaces/Zone';
+import Pagination from './Pagination';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const Area: React.FC = () => {
   const [areas, setAreas] = useState<IArea[]>([]);
   const [zones, setZones] = useState<IZone[]>([]);
   const [selectedArea, setSelectedArea] = useState<IArea | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchBy, setSearchBy] = useState<string>('area');
+  const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
-    fetchAreas();
     fetchZones();
-  }, []);
+    fetchAreas(currentPage);
+  }, [currentPage]);
 
-  const fetchAreas = async () => {
-    const result = await getAreas();
-    setAreas(result);
+  const fetchAreas = async (page: number) => {
+    try {
+      const result = await getAreas(page, searchBy === 'area' ? searchText : undefined, searchBy === 'zone' ? searchText : undefined);
+      setAreas(result.data);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error('Error fetching areas:', error);
+      setAreas([]);
+      setTotalPages(1);
+    }
   };
 
   const fetchZones = async () => {
-    const result = await getZones();
-    setZones(result);
+    try {
+      const result = await getZones(currentPage); // Ensure you pass the current page number
+      setZones(Array.isArray(result.data) ? result.data : []);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error('Error fetching zones:', error);
+      setZones([]);
+    }
   };
 
   const handleSelectArea = (area: IArea) => {
@@ -30,20 +49,35 @@ const Area: React.FC = () => {
     openModal();
   };
 
+  interface IAreaPayload {
+    id: number;
+    name: string;
+    zoneId: number;
+  }
+  
   const handleCreateOrUpdate = async () => {
-    if (selectedArea?.id) {
-      await updateArea(selectedArea.id, selectedArea);
-    } else {
-      await createArea(selectedArea!);
+    if (selectedArea) {
+ 
+      const payload: IAreaPayload = {
+        id: selectedArea.id,
+        name: selectedArea.name,
+        zoneId: selectedArea.zone.id,
+      };
+  
+      if (selectedArea.id) {
+        await updateArea(selectedArea.id, payload);
+      } else {
+        await createArea(payload);
+      }
+      fetchAreas(currentPage);
+      setSelectedArea(null);
+      closeModal();
     }
-    fetchAreas();
-    setSelectedArea(null);
-    closeModal();
   };
 
   const handleDelete = async (id: number) => {
     await deleteArea(id);
-    fetchAreas();
+    fetchAreas(currentPage);
   };
 
   const handleCreateNew = () => {
@@ -69,11 +103,40 @@ const Area: React.FC = () => {
     }
   };
 
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to the first page for new search
+    fetchAreas(1);
+  };
+
   return (
     <div className="container mt-4">
       <div className="card">
         <div className="card-header">
           <h2>Areas</h2>
+          <div className="row">
+            <div className="col-md-4">
+              <select
+                className="form-control"
+                value={searchBy}
+                onChange={(e) => setSearchBy(e.target.value)}
+              >
+                <option value="area">Search by Area</option>
+                <option value="zone">Search by Zone</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <input
+                type="text"
+                className="form-control"
+                placeholder={`Enter ${searchBy} name`}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           <button className="btn btn-primary mb-3" onClick={handleCreateNew}>Create Area</button>
@@ -93,13 +156,22 @@ const Area: React.FC = () => {
                   <td>{area.name}</td>
                   <td>{area.zone.name}</td>
                   <td>
-                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectArea(area)}>Edit</button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(area.id!)}>Delete</button>
+                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectArea(area)}>
+                      <FaEdit />
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(area.id!)}>
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page: number) => setCurrentPage(page)}
+          />
         </div>
       </div>
 
