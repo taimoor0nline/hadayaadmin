@@ -7,7 +7,7 @@ const apiService = axios.create({
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
     'Accept': '*/*',
-    'User-Agent': 'PostmanRuntime/7.40.0',
+    'User-Agent': 'navigator.userAgent',
     'Accept-Encoding': 'gzip, deflate, br',
     'Connection': 'keep-alive',
   },
