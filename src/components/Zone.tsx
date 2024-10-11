@@ -113,12 +113,8 @@ const Zone: React.FC = () => {
                   <td>{index + 1}</td>
                   <td>{zone.name}</td>
                   <td>
-                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectZone(zone)}>
-                      <FaEdit />
-                    </button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(zone.id!)}>
-                      <FaTrash />
-                    </button>
+                    <button className="btn btn-sm btn-info mr-2"  style={{margin:'5px',padding:'5px'}} onClick={() => handleSelectZone(zone)}>Edit</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(zone.id!)}>Delete</button>
                   </td>
                 </tr>
               ))}

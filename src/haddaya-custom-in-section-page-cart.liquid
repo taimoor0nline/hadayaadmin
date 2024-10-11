@@ -1,0 +1,1786 @@
+<section class="page-cart">
+  <div class="content-pages">
+    <div class="container container-v1">
+      <div class="row">
+        <div class="col-md-6" style="margin-top: -80px;">
+          <div class="card">
+            <div class="card-body">
+              <div id="divLeft">
+                {% if cart.item_count > 0 %}
+                  <div class="row">
+                    <div class="col-md-12 mx-0">
+                      <form id="msform">
+                        <!-- progressbar -->
+                        <ul id="progressbar">
+                          <li class="active" id="customize"><strong>Customize</strong></li>
+                          <li id="personal"><strong>Delivery Details</strong></li>
+                        </ul>
+                        <!-- fieldsets -->
+                        <fieldset>
+                          <div class="form-card">
+                            <div class="row">
+                              <div class="col-md-11">
+                                <h4>Gift Card & Message</h4>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-6 text-center">
+                                <div class="card-img-top">
+                                  <img
+                                    class="card-image"
+                                    src="https://placehold.co/600x400?text=Choose+Card"
+                                    alt="Card Placeholder"
+                                  >
+                                  <div class="indicator-message">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-6 text-center">
+                                <div class="message-card">
+                                  <img
+                                    src="https://placehold.co/600x400?text=Your+Message"
+                                    alt="Message Placeholder"
+                                    class="card-image"
+                                  >
+                                  <div class="indicator-product">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <input
+                            type="button"
+                            name="next"
+                            class="next action-button"
+                            value="Next Step"
+                            id="customizeNextStep"
+                          >
+                        </fieldset>
+                        <fieldset>
+                          <div class="form-card">
+                            <div class="form-group row">
+                              <label class="col-sm-2 col-form-label">Recipient name *</label>
+                              <div class="col-sm-10">
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  name="recipient_name"
+                                  placeholder="Recipient name"
+                                >
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-sm-2 col-form-label">Recipient phone *</label>
+                              <div class="col-sm-10">
+                                <div class="input-group">
+                                  <div class="input-group-prepend">
+                                    <!--
+                                      <select class="custom-select" name="phone_code">
+                                          <option value="968">Oman (+968)</option>
+                                      </select>
+                                    -->
+                                  </div>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="recipient_phone"
+                                    placeholder="Recipient phone"
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <div class="col-sm-2">Ask for address</div>
+                              <div class="col-sm-10">
+                                <div class="custom-control custom-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="askAddress"
+                                    name="ask_address"
+                                  >
+                                  <label class="custom-control-label" for="askAddress"
+                                    >Ask the recipient for the address</label
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-group row" id="addressInfo" style="display:none;">
+                              <div class="col-sm-2"></div>
+                              <div class="col-sm-10">
+                                <div class="alert alert-warning" role="alert">
+                                  We will collect the address from the recipient. Delivery time may be impacted if the
+                                  recipient is unreachable.
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div class="form-group row" id="zone">
+                                <label class="col-sm-2 col-form-label">Zone *</label>
+                                <div class="col-sm-10">
+                                  <select name="zone" class="form-control">
+                                    <option disabled selected>Select your Zone</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                              <div class="form-group row" id="area">
+                                <label class="col-sm-2 col-form-label">Area *</label>
+                                <div class="col-sm-10">
+                                  <select name="area" class="form-control">
+                                    <option disabled selected>Select your Area</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                            <div class="form-group row" id="recipientAddress">
+                              <label class="col-sm-2 col-form-label">Recipient Address *</label>
+                              <div class="col-sm-10">
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  name="recipient_address"
+                                  placeholder="Recipient Address"
+                                >
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <div class="col-sm-2">Identity Secret</div>
+                              <div class="col-sm-10">
+                                <div class="custom-control custom-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="keepIdentitySecret"
+                                    name="keep_identity_secret"
+                                  >
+                                  <label class="custom-control-label" for="keepIdentitySecret"
+                                    >Keep my identity secret</label
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-sm-2 col-form-label">Delivery time</label>
+                              <div class="col-sm-10">
+                                <div class="btn-group btn-group-toggle delivery-time-buttons" data-toggle="buttons">
+                                  <label class="btn btn-outline-primary active delivery-button">
+                                    <input type="radio" name="delivery_time" value="fastest" autocomplete="off"> Fastest
+                                    Delivery
+                                  </label>
+                                  <label
+                                    class="btn btn-outline-primary delivery-button"
+                                    data-toggle="modal"
+                                    data-target="#deliveryModal"
+                                  >
+                                    <input type="radio" name="delivery_time" value="anotherTime" autocomplete="off">
+                                    Another time
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <input type="button" name="previous" class="previous action-button-previous" value="Previous">
+                          <input
+                            type="button"
+                            name="next"
+                            class="next action-button"
+                            value="checkout"
+                            id="deliveryNextStep"
+                            onclick="saveDeliveryDetailsAndRedirect()"
+                          >
+                        </fieldset>
+                      </form>
+                    </div>
+                  </div>
+                {% else %}
+                  <p>{{ 'cart.general.empty' | t }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="shopping-cart-section">
+            <div class="card">
+              <div class="row">
+                <div class="col-md-8 cart">
+                  <div class="col align-self-left text-right text-muted">
+                    <button class="btn btn-outline-primary" id="show-packing">Packing</button>
+                  </div>
+                  <div class="col align-self-center text-right text-muted">Total {{ cart.item_count }} items</div>
+                  <div class="cart-items">
+                    {% for item in cart.items %}
+                      <div class="row border-top border-bottom">
+                        <div class="row main align-items-center">
+                          <div class="col-12">
+                            <div class="row text-muted">{{ item.product.title }}</div>
+                          </div>
+                          <div class="col-2">
+                            <a href="{{ item.url }}">
+                              <img
+                                class="img-fluid"
+                                src="{{ item | img_url: 'small' }}"
+                                alt="{{ item.title | escape }}"
+                              >
+                            </a>
+                          </div>
+                          <div class="col-4">
+                            <div class="row">{{ item.variant.title }}</div>
+                            <div class="row">{{ item.price | money_without_trailing_zeros }}</div>
+                          </div>
+                          <div class="col quantity-wrapper">
+                            <button class="quantity-btn" onclick="decreaseQuantity('{{ item.variant_id }}')">-</button>
+                            <div class="js-qty">
+                              <input
+                                type="text"
+                                class="js-qty__num"
+                                value="{{ item.quantity }}"
+                                min="1"
+                                data-id="{{ item.variant_id }}"
+                                aria-label="quantity"
+                                pattern="[0-9]*"
+                                name="updates[]"
+                                id="updates_{{ item.variant_id }}"
+                              >
+                            </div>
+                            <button class="quantity-btn" onclick="increaseQuantity('{{ item.variant_id }}')">+</button>
+                          </div>
+                          <div class="col">
+                            <a class="remove" href="/cart/change?line={{ forloop.index }}&quantity=0">
+                              <i class="fa fa-trash"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                  <div class="back-to-shop">
+                    <span class="message-wrapper message-content"></span>&nbsp;<span
+                      class="message-wrapper url-content"
+                    ></span>
+                    <br>
+                    <span class="delivery-wrapper deliveryDate"></span>&nbsp;<span
+                      class="delivery-wrapper deliveryT"
+                    ></span
+                    ><br>
+                    <hr>
+                    <a href="/collections/all">&leftarrow;</a><span class="text-muted">Back to shop</span>
+                  </div>
+                </div>
+                <div class="col-md-4 summary">
+                  <div>
+                    <h5><b>Summary</b></h5>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col" style="padding-left:0;">Subtotal</div>
+                    <div class="col text-right">{{ cart.total_price | money_without_trailing_zeros }}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col" style="padding-left:0;">Total</div>
+                    <div class="col text-right">{{ cart.total_price | money_without_trailing_zeros }}</div>
+                  </div>
+                  <button class="btn" onclick="location.href='/checkout'">CHECKOUT</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal HTML -->
+<div
+  class="modal fade"
+  id="productModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="productModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productModalLabel">Customize Your Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="productMessageTabs" role="tablist">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              id="products-tab"
+              data-toggle="tab"
+              href="#products"
+              role="tab"
+              aria-controls="products"
+              aria-selected="true"
+              >Choose Card</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="message-tab"
+              data-toggle="tab"
+              href="#message"
+              role="tab"
+              aria-controls="message"
+              aria-selected="false"
+              >Add Message</a
+            >
+          </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane active" id="products" role="tabpanel" aria-labelledby="products-tab">
+            <div class="container">
+              <div class="row">
+                {% assign products = collections.cards.products %}
+                {% if products.size > 0 %}
+                  {% for product in products %}
+                    {% for variant in product.variants %}
+                      <div class="col-md-4">
+                        <div class="product-card">
+                          <input
+                            type="radio"
+                            name="selectedProduct"
+                            id="product-{{ variant.id }}"
+                            value="{{ variant.id }}"
+                          >
+                          <label for="product-{{ variant.id }}">
+                            <img
+                              src="{{ product.featured_image | img_url: 'medium' }}"
+                              alt="{{ product.title }}"
+                              class="modal-image"
+                            >
+                            <p>{{ variant.price | money_without_trailing_zeros }}</p>
+                          </label>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% endfor %}
+                {% else %}
+                  <p>No products found in this collection.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="message" role="tabpanel" aria-labelledby="message-tab">
+            <div class="form-group">
+              <label for="customMessage">Message</label>
+              <textarea class="form-control" id="customMessage" rows="3" placeholder="Enter your message"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="customLink">Paste a link to a song or video</label>
+              <input type="url" class="form-control" id="customLink" placeholder="Enter URL">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="saveAndContinue"
+          style="background-color: #f90; border-color: #f90;"
+        >
+          Save and Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delivery Time Modal -->
+<div
+  class="modal fade"
+  id="deliveryModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="deliveryModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <!-- Make modal larger -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deliveryModalLabel">Another time</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Select a delivery date *</label>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                  <label
+                    class="btn btn-outline-primary delivery-date active"
+                    style="background-color: #f90; color: white; border: none;"
+                  >
+                    <input type="radio" name="delivery_date" value="today" autocomplete="off" checked> Today : 01 August
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery-date"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_date" value="tomorrow" autocomplete="off"> Tomorrow : 02 August
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery-date"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_date" value="pickDate" autocomplete="off"> Pick a date
+                  </label>
+                </div>
+              </div>
+              <div class="form-group" id="datePicker" style="display:none;">
+                <label>Select a delivery date *</label>
+                <input type="date" class="form-control" name="picked_date">
+              </div>
+              <div class="form-group">
+                <label>Select a delivery time *</label>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                  <label
+                    class="btn btn-outline-primary delivery_time"
+                    style="background-color: #f90; color: white; border: none;"
+                  >
+                    <input type="radio" name="delivery_time_modal" value="10am-1pm" autocomplete="off"> 10:00am - 1:00pm
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery_time"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_time_modal" value="1pm-4pm" autocomplete="off"> 1:00pm - 4:00pm
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery_time"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_time_modal" value="4pm-7pm" autocomplete="off"> 4:00pm - 7:00pm
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery_time"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_time_modal" value="7pm-10pm" autocomplete="off"> 7:00pm - 10:00pm
+                  </label>
+                  <label
+                    class="btn btn-outline-primary delivery_time"
+                    style="background-color: #f90; color: white; border: none; margin-left: 5px;"
+                  >
+                    <input type="radio" name="delivery_time_modal" value="8pm-12am" autocomplete="off"> 8:00pm - 12:00am
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmDeliveryTime"
+          style="background-color: #f90; border-color: #f90;"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Packing Modal Content -->
+
+<!-- Packing Modal -->
+<div class="modal fade" id="packingModal" tabindex="-1" role="dialog" aria-labelledby="packingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="packingModalLabel">Choose Your Packing</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <!-- Assign packing collection -->
+            {% assign packings = collections['packing'].products %}
+            
+            <!-- Check if there are products in the packing collection -->
+            {% if packings.size > 0 %}
+              <!-- Loop through each product and variant in the packing collection -->
+              {% for packing in packings %}
+                {% for variant in packing.variants %}
+                  <div class="col-md-4">
+                    <div class="packing-item-card">
+                      <!-- Radio button to select packing -->
+                      <input
+                        type="radio"
+                        name="selectedPacking"
+                        id="packing-{{ variant.id }}"
+                        value="{{ variant.id }}"
+                        {% if cart.attributes.packing_id == variant.id %}checked{% endif %}
+                      >
+                      <label for="packing-{{ variant.id }}">
+                        <!-- Display packing image -->
+                        <img
+                          src="{{ packing.featured_image | img_url: 'medium' }}"
+                          alt="{{ packing.title }}"
+                          class="packing-modal-image"
+                        >
+                        <!-- Display packing title and price -->
+                        <p>{{ packing.title }} - {{ variant.price | money_without_trailing_zeros }}</p>
+                      </label>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+            {% else %}
+              <p>No packing items found.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="savePackingSelection" style="background-color: #f90; border-color: #f90;">
+          Save and Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% stylesheet %}
+  .delivery-button {
+      background-color: #f90 !important;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 2px solid transparent;
+  }
+
+  .delivery-button:hover {
+      background-color: #e08900 !important;
+  }
+
+  .delivery-button.active,
+  .delivery-button:active {
+      background-color: #876022 !important;
+  }
+
+    .delivery-date.active,
+    .delivery-date:active {
+      background-color: #876022 !important;
+  }
+
+      .delivery_time.active,
+    .delivery_time:active {
+      background-color: #876022 !important;
+  }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #f90;
+        border-color: #f90;
+    }
+
+    #keepIdentitySecret:checked{
+        background-color: #f90;
+        border-color: #f90;
+    }
+
+    .modal-image,
+    .card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .indicator-message,
+    .indicator-product {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        display: none;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+    }
+
+    .cart-item.even {
+        background-color: #f1f1f1;
+    }
+
+    .cart-item-thumbnail img {
+        max-width: 80px;
+        border-radius: 10px;
+    }
+
+    .cart-item-details {
+        flex-grow: 1;
+        margin-left: 15px;
+    }
+
+    .cart-item-title {
+        font-weight: bold;
+        display: block;
+    }
+
+    .cart-item-price {
+        color: #000;
+        font-weight: bold;
+    }
+
+    .quantity-wrapper {
+        display: flex;
+        align-items: center;
+        border: 1px solid rgba(0, 0, 0, 0.137);
+        padding: 5px;
+        border-radius: 4px;
+        height: 40px;
+    }
+
+    .quantity-wrapper .quantity-btn {
+        background: none;
+        border: none;
+        font-size: 1rem;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .quantity-wrapper .quantity-btn:focus {
+        outline: none;
+    }
+
+    .quantity-wrapper .js-qty {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-wrapper .js-qty__num {
+        width: 40px;
+        text-align: center;
+        border: none;
+        outline: none;
+    }
+
+    .quantity-btn {
+        border: none;
+        background-color: #fff;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .quantity-btn:focus {
+        outline: none;
+    }
+
+    .quantity-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    .quantity-input {
+        width: 50px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #ced4da;
+        border-right: 1px solid #ced4da;
+    }
+
+    .quantity-input:focus {
+        outline: none;
+    }
+
+    .cart-item-remove a {
+        color: #d9534f;
+        font-size: 20px;
+        cursor: pointer;
+        text-decoration: none;
+        margin-left: 10px;
+    }
+
+    .cart-item-remove a:hover {
+        color: #c9302c;
+    }
+
+    .shopping-cart-section .title {
+        margin-bottom: 5vh;
+    }
+
+    .shopping-cart-section .card {
+        margin: auto;
+        max-width: 950px;
+        width: 90%;
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 1rem;
+        border: transparent;
+    }
+
+    .shopping-cart-section .cart {
+        background-color: #fff;
+        padding: 4vh 5vh;
+        border-bottom-left-radius: 1rem;
+        border-top-left-radius: 1rem;
+    }
+
+    .shopping-cart-section .summary {
+        background-color: #ddd;
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding: 4vh;
+        color: rgb(65, 65, 65);
+    }
+
+    .shopping-cart-section .summary .col-2 {
+        padding: 0;
+    }
+
+    .shopping-cart-section .summary .col-10 {
+        padding: 0;
+    }
+
+    .shopping-cart-section .row {
+        margin: 0;
+    }
+
+    .shopping-cart-section .title b {
+        font-size: 1.5rem;
+    }
+
+    .shopping-cart-section .main {
+        margin: 0;
+        padding: 2vh 0;
+        width: 100%;
+    }
+
+    .shopping-cart-section .col-2,
+    .shopping-cart-section .col {
+        padding: 0 1vh;
+    }
+
+    .shopping-cart-section .card a {
+        padding: 0 1vh;
+    }
+
+    .shopping-cart-section .close {
+        margin-left: auto;
+        font-size: 0.7rem;
+    }
+
+    .shopping-cart-section img {
+        width: 3.5rem;
+    }
+
+    .shopping-cart-section .back-to-shop {
+        margin-top: 4.5rem;
+    }
+
+    .shopping-cart-section h5 {
+        margin-top: 4vh;
+    }
+
+    .shopping-cart-section hr {
+        margin-top: 1.25rem;
+    }
+
+    .shopping-cart-section form {
+        padding: 2vh 0;
+    }
+
+    .shopping-cart-section select {
+        border: 1px solid rgba(0, 0, 0, 0.137);
+        padding: 1.5vh 1vh;
+        margin-bottom: 4vh;
+        outline: none;
+        width: 100%;
+        background-color: rgb(247, 247, 247);
+    }
+
+    .shopping-cart-section input {
+        border: 1px solid rgba(0, 0, 0, 0.137);
+        padding: 1vh;
+        margin-left: 10px;
+        outline: none;
+        width: 100%;
+        background-color: none;
+    }
+
+    .shopping-cart-section input:focus::-webkit-input-placeholder {
+        color: transparent;
+    }
+
+    .shopping-cart-section .btn {
+        background-color: #f90;
+        border-color: #f90;
+        color: white;
+        width: 100%;
+        font-size: 0.7rem;
+        margin-top: 4vh;
+        padding: 1vh;
+        border-radius: 0;
+    }
+
+    .shopping-cart-section .btn:focus {
+        box-shadow: none;
+        outline: none;
+        color: white;
+        -webkit-box-shadow: none;
+        -webkit-user-select: none;
+        transition: none;
+    }
+
+    .shopping-cart-section .btn:hover {
+        color: white;
+    }
+
+    .shopping-cart-section .card a {
+        color: black;
+    }
+
+    .shopping-cart-section .card a:hover {
+        color: black;
+        text-decoration: none;
+    }
+
+    .shopping-cart-section #code {
+        background-image: linear-gradient(to left, rgba(255, 255, 255, 0.253), rgba(255, 255, 255, 0.185)), url("https://img.icons8.com/small/16/000000/long-arrow-right.png");
+        background-repeat: no-repeat;
+        background-position-x: 95%;
+        background-position-y: center;
+    }
+
+    .quantity-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+    }
+
+    .quantity-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    #grad1 {
+        background-color: : #9C27B0;
+        background-image: linear-gradient(120deg, #FF4081, #81D4FA);
+    }
+
+    /*form styles*/
+    #msform {
+        text-align: center;
+        position: relative;
+        margin-top: 20px;
+    }
+
+    #msform fieldset .form-card {
+        background: white;
+        border: 0 none;
+        border-radius: 0px;
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+        padding: 20px 40px 30px 40px;
+        box-sizing: border-box;
+        width: 94%;
+        margin: 0 3% 20px 3%;
+
+        /*stacking fieldsets above each other*/
+        position: relative;
+    }
+
+    #msform fieldset {
+        background: white;
+        border: 0 none;
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        width: 100%;
+        margin: 0;
+        padding-bottom: 20px;
+
+        /*stacking fieldsets above each other*/
+        position: relative;
+    }
+
+    /*Hide all except first fieldset*/
+    #msform fieldset:not(:first-of-type) {
+        display: none;
+    }
+
+    #msform fieldset .form-card {
+        text-align: left;
+        color: #9E9E9E;
+    }
+
+    #msform input, #msform textarea {
+        padding: 0px 8px 4px 8px;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        border-radius: 0px;
+        margin-bottom: 25px;
+        margin-top: 2px;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: montserrat;
+        color: #2C3E50;
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    #msform input:focus, #msform textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: none;
+        font-weight: bold;
+        border-bottom: 2px solid #f90;
+        outline-width: 0;
+    }
+
+    /*Blue Buttons*/
+    #msform .action-button {
+        width: 100px;
+        background: #f90;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 5px;
+    }
+
+    #msform .action-button:hover, #msform .action-button:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #f90;
+    }
+
+    /*Previous Buttons*/
+    #msform .action-button-previous {
+        width: 100px;
+        background: #616161;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 5px;
+    }
+
+    #msform .action-button-previous:hover, #msform .action-button-previous:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #616161;
+    }
+
+    /*Dropdown List Exp Date*/
+    select.list-dt {
+        border: none;
+        outline: 0;
+        border-bottom: 1px solid #ccc;
+        padding: 2px 5px 3px 5px;
+        margin: 2px;
+    }
+
+    select.list-dt:focus {
+        border-bottom: 2px solid #f90;
+    }
+
+    /*The background card*/
+    .card {
+        z-index: 0;
+        border: none;
+        border-radius: 0.5rem;
+        position: relative;
+    }
+
+    /*FieldSet headings*/
+    .fs-title {
+        font-size: 25px;
+        color: #2C3E50;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    /*progressbar*/
+    #progressbar {
+        margin-bottom: 30px;
+        overflow: hidden;
+        color: lightgrey;
+    }
+
+    #progressbar .active {
+        color: #f90;
+    }
+
+    #progressbar li {
+        list-style-type: none;
+        font-size: 12px;
+        width: 50%;
+        float: left;
+        position: relative;
+    }
+
+    /*Icons in the ProgressBar*/
+    #progressbar #customize:before {
+        font-family: FontAwesome;
+        content: "1";
+    }
+
+    #progressbar #personal:before {
+        font-family: FontAwesome;
+        content: "2";
+    }
+
+    /*ProgressBar before any progress*/
+    #progressbar li:before {
+        width: 50px;
+        height: 50px;
+        line-height: 45px;
+        display: block;
+        font-size: 18px;
+        color: #ffffff;
+        background: lightgray;
+        border-radius: 50%;
+        margin: 0 auto 10px auto;
+        padding: 2px;
+    }
+
+    /*ProgressBar connectors*/
+    #progressbar li:after {
+        content: '';
+        width: 100%;
+        height: 2px;
+        background: lightgray;
+        position: absolute;
+        left: 0;
+        top: 25px;
+        z-index: -1;
+    }
+
+    /*Color number of the step and the connector before it*/
+    #progressbar li.active:before, #progressbar li.active:after {
+        background: #f90;
+    }
+
+    /*Imaged Radio Buttons*/
+    .radio-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .radio {
+        display: inline-block;
+        width: 204;
+        height: 104;
+        border-radius: 0;
+        background: lightblue;
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        cursor: pointer;
+        margin: 8px 2px;
+    }
+
+    .radio:hover {
+        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .radio.selected {
+        box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /*Fit image in bootstrap div*/
+    .fit-image {
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .card-img,
+    .modal-image,
+    .card-image {
+        width: 100%;
+        height: auto;
+    }
+
+    .message-card, .card-img-top{
+        border: 1px solid #e9ecef;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .message-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    .card-img-top img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .delivery-time-buttons .btn {
+        margin-right: 5px;
+        background-color: #f90;
+        color: white;
+        border: none;
+    }
+{% endstylesheet %}
+
+{% javascript %}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Fetch zones and populate the zone dropdown
+    fetchZones();
+
+    // Fetch the areas when a zone is selected
+    document.querySelector('select[name="zone"]').addEventListener('change', function() {
+        const selectedZoneId = this.value;
+        if (selectedZoneId) {
+            fetchAreas(selectedZoneId);
+        }
+    });
+
+    // Fetch Zones from the API
+    function fetchZones() {
+        const apiUrl = 'https://api.haddaya.com/zones/list';
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                let zoneSelect = document.querySelector('select[name="zone"]');
+                zoneSelect.innerHTML = '<option disabled selected>Select your Zone</option>'; // Reset the select options
+
+                // Iterate over the 'data' array and add each zone as an option
+                data.data.forEach(zone => {
+                    let option = document.createElement('option');
+                    option.value = zone.id; // Use the 'id' as the value of the option
+                    option.textContent = zone.name; // Use 'name' for display text
+                    zoneSelect.appendChild(option); // Append the option to the select
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    // Fetch Areas based on the selected zone from the API
+    function fetchAreas(zoneId) {
+        const apiUrl = `https://api.haddaya.com/areas/list`;
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                let areaSelect = document.querySelector('select[name="area"]');
+                areaSelect.innerHTML = '<option disabled selected>Select your Area</option>'; // Reset the select options
+
+                // Filter areas based on the selected zoneId
+                data.data
+                    .filter(area => area.zoneId == zoneId) // Only show areas for the selected zone
+                    .forEach(area => {
+                        let option = document.createElement('option');
+                        option.value = area.id; // Use the 'id' as the value of the option
+                        option.textContent = area.name; // Use 'name' for display text
+                        areaSelect.appendChild(option); // Append the option to the select
+                    });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+});
+
+
+
+      document.addEventListener("DOMContentLoaded", function() {
+      var radioButtons = document.querySelectorAll('input[name="selectedProduct"]');
+  
+  radioButtons.forEach(function(radioButton) {
+    radioButton.addEventListener('change', function() {
+      if (this.checked) {
+        var label = this.nextElementSibling;
+        var imageElement = label.querySelector('img.modal-image');
+        
+        if (imageElement) {
+          var imageUrl = imageElement.src;
+          console.log("Selected Image URL:", imageUrl); 
+          var mainImageElement = document.querySelector('.card-img-top .card-image');
+          if (mainImageElement) {
+            mainImageElement.src = imageUrl;
+          }
+        }
+      }
+    });
+  });
+
+  // Optionally, trigger the first radio button to set the default image on page load
+  if (radioButtons.length > 0) {
+    radioButtons[0].checked = true; // Check the first radio button
+    radioButtons[0].dispatchEvent(new Event('change')); // Trigger the change event
+  }
+        
+          function removeQuantityButtons() {
+              // Select all elements with the class 'qty_minus' and 'qty_plus'
+              const minusButtons = document.querySelectorAll('.qty_minus');
+              const plusButtons = document.querySelectorAll('.qty_plus');
+  
+              // Remove each of these elements from the DOM
+              minusButtons.forEach(button => button.remove());
+              plusButtons.forEach(button => button.remove());
+          }
+  
+          // Remove the buttons when the DOM is fully loaded
+          removeQuantityButtons();
+  
+          // If there are dynamic updates to the DOM, use MutationObserver to continuously remove buttons
+          const observer = new MutationObserver(removeQuantityButtons);
+          observer.observe(document.body, { childList: true, subtree: true });
+      });
+    
+      function decreaseQuantity(itemId) {
+          var input = document.getElementById('updates_' + itemId);
+          var value = parseInt(input.value);
+          if (value > 1) {
+              input.value = value - 1;
+          }
+      }
+  
+      function increaseQuantity(itemId) {
+          var input = document.getElementById('updates_' + itemId);
+          var value = parseInt(input.value);
+          input.value = value + 1;
+      }
+  
+      function showProductModal(tab) {
+          $('#productModal').modal('show');
+          if (tab === 'message') {
+              $('#message-tab').tab('show');
+              document.querySelector('.message-card img').src = "https://placehold.co/600x400?text=Your+Message&selected";
+          } else if (tab === 'product') {
+              $('#products-tab').tab('show');
+              document.querySelector('.card-img-top').src = "https://placehold.co/600x400?text=Choose+Card&selected";
+          }
+      }
+
+      function showPackingModal() {
+        $('#packingModal').modal('show');
+    }
+
+    $(document).on('click', '#show-packing', function() {
+      debugger;
+      showPackingModal();
+  });
+
+
+
+  
+      $(document).ready(function() {
+
+
+         $('#deliveryModal').on('show.bs.modal', function() {
+        let selectedDate = $('input[name="delivery_date"]:checked').val();
+        handleDateChange(selectedDate);
+    });
+
+    // Fetch delivery slots when a date is selected
+    $('input[name="delivery_date"]').on('change', function() {
+        let selectedDate;
+
+        // Handle 'Pick a date' option by reading from the date input
+        if ($(this).val() === 'pickDate') {
+            selectedDate = $('input[name="picked_date"]').val();
+        } else if ($(this).val() === 'today') {
+            selectedDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
+        } else if ($(this).val() === 'tomorrow') {
+            let tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1); // Increment the date by 1
+            selectedDate = tomorrow.toISOString().split('T')[0];
+        }
+
+        // Call the function to fetch and display delivery slots
+        handleDateChange(selectedDate);
+    });
+
+    // Handle date changes for custom date input (Pick a date)
+    $('input[name="picked_date"]').on('change', function() {
+        let pickedDate = $(this).val();
+        if (pickedDate) {
+            handleDateChange(pickedDate);
+        }
+    });
+
+    // Function to handle date change and fetch delivery slots
+    function handleDateChange(date) {
+        if (!date) return;
+
+        // Fetch delivery slots for the selected date
+        const apiUrl = `https://api.haddaya.com/delivery-slot/list?date=${date}`;
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                const currentTime = new Date(); // Get the current time
+                const deliveryTimeContainer = $('.delivery-time-buttons'); // Container for delivery time buttons
+
+                // Clear the current delivery time slots
+                deliveryTimeContainer.empty();
+
+                // Iterate over the delivery slots and append them to the modal
+                data.data.forEach(slot => {
+                    if (slot.status === 'ACTIVE') {
+                        const startTime = new Date(`${slot.startDate}T${slot.startTime}`);
+                        const endTime = new Date(`${slot.endDate}T${slot.endTime}`);
+                        const thresholdTime = new Date(endTime.getTime() - slot.thresholdMinutes * 60000); // Apply threshold
+
+                        // Check if the current time is before the threshold time
+                        const isDisabled = currentTime >= thresholdTime;
+
+                        // Create the HTML for the delivery slot
+                        const slotHtml = `
+                            <label class="btn btn-outline-primary delivery_time ${isDisabled ? 'disabled' : ''}">
+                                <input type="radio" name="delivery_time_modal" value="${slot.startTime}-${slot.endTime}" autocomplete="off" ${isDisabled ? 'disabled' : ''}>
+                                ${slot.startTime} - ${slot.endTime}
+                            </label>
+                        `;
+
+                        // Append the slot to the container
+                        deliveryTimeContainer.append(slotHtml);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    // Show date picker when "Pick a date" is selected
+    $('input[name="delivery_date"]').on('change', function() {
+        if ($(this).val() == 'pickDate') {
+            $('#datePicker').show(); // Show date picker input
+        } else {
+            $('#datePicker').hide(); // Hide date picker input
+        }
+    });
+
+
+
+
+        // Save packing selection
+    $('#savePackingSelection').click(function() {
+        var selectedPacking = $('input[name="selectedPacking"]:checked').val();
+        if (selectedPacking) {
+            savePackingSelection(selectedPacking);
+        } else {
+            alert("Please select a packing option.");
+        }
+    });
+
+    // Save the packing selection and update the cart
+    function savePackingSelection(packingId) {
+        $.ajax({
+            type: 'POST',
+            url: '/cart/update.js',
+            data: {
+                attributes: {
+                    'packing_id': packingId
+                }
+            },
+            dataType: 'json',
+            success: function() {
+                console.log('Packing selected:', packingId);
+                $('#packingModal').modal('hide');
+                updateSelectedPacking(packingId);
+            },
+            error: function(error) {
+                console.log('Error saving packing selection', error);
+            }
+        });
+    }
+
+    // Update the selected packing in the UI
+    function updateSelectedPacking(packingId) {
+        var packingLabel = $('label[for="packing-' + packingId + '"]');
+        var selectedPackingTitle = packingLabel.find('p').text();
+
+        $('.packing-wrapper').html('<strong>Packing Selected: </strong>' + selectedPackingTitle);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Fetch the packing ID stored in cart attributes, ensure it is interpreted correctly in Liquid
+      var selectedPacking = "{{ cart.attributes.packing_id | default: '' }}";
+  
+      // Check if a packing ID exists
+      if (selectedPacking) {
+          // Select the radio button with the corresponding packing ID
+          $('#packing-' + selectedPacking).prop('checked', true);
+          updateSelectedPacking(selectedPacking);
+      }
+  });
+
+
+
+
+
+
+        fetchAreaData();
+          function fetchAreaData() {
+    const apiUrl = 'https://api.haddaya.com/areas/list';
+
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json(); // Parse the response as JSON
+        })
+        .then(data => {
+            let select = document.querySelector('select[name="area"]');
+            select.innerHTML = '<option disabled selected>Select your Area</option>'; // Reset the select options
+
+            // Iterate over the 'data' array and add each area as an option
+            data.data.forEach(item => {
+                let option = document.createElement('option');
+                option.value = item.id; // Use the 'id' as the value of the option
+                option.textContent = `${item.name} (${item.zone.name})`; // Use 'name' and 'zone' name for display text
+                select.appendChild(option); // Append the option to the select
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+        
+         $('.message-wrapper').hide();
+              function updateDeliveryTime() {
+              var selectedTime = $('input[name="delivery_time_modal"]:checked').val();
+              if (selectedTime) {
+                  $('.deliveryT').html('<strong>Delivery Time: </strong>' + selectedTime);
+              } else {
+                  $('.deliveryT').html('');
+              }
+            }
+
+      function updateDeliveryDate() {
+        var selectedDate = $('input[name="delivery_date"]:checked').val();
+        if (selectedDate) {
+          if(selectedDate=='pickDate'){
+            date = $('input[name="picked_date"]').val();
+            $('.deliveryDate').html('<strong>Delivery date: </strong>' + date);
+          }else{
+            $('.deliveryDate').html('<strong>Delivery date: </strong>' + selectedDate);
+          }
+        } else {
+            $('.deliveryDate').html('');
+        }
+      }
+          function updateContent() {
+              var message = $('#customMessage').val().trim();
+              var url = $('#customLink').val().trim();
+               if (message || url) {
+            if (message) {
+                $('.message-content').html('<strong>Your Message: </strong>' + message);
+                } else {
+                    $('.message-content').html('');
+                }
+                if (url) {
+                    $('.url-content').html('<strong>Your URL: </strong>' + url);
+                } else {
+                    $('.url-content').html('');
+                }
+                $('.message-wrapper').show();
+            } else {
+                $('.message-wrapper').hide();
+            }
+          }
+        
+
+              
+          function addToCart(variantId) {
+              $.ajax({
+                  type: 'POST',
+                  url: '/cart/add.js',
+                  data: {
+                      id: variantId,
+                      quantity: 1
+                  },
+                  dataType: 'json',
+                  success: function() {
+                      console.log('Product added to cart');
+                     $('#productModal').modal('hide');
+                  },
+                  error: function(error) {
+                      console.log('Error adding product to cart', error);
+                  }
+              });
+          }
+  
+          function saveDeliveryDetailsAndRedirect() {
+              var recipientName = $('input[name="recipient_name"]').val();
+              var recipientPhone = $('input[name="recipient_phone"]').val();
+              var askAddress = $('input[name="ask_address"]').is(':checked');
+              var recipientAddress = $('input[name="recipient_address"]').val();
+              var zone = $('select[name="zone"] option:selected').val();
+              var area = $('select[name="area"] option:selected').val();
+              var keepIdentitySecret = $('input[name="keep_identity_secret"]').is(':checked');
+              var deliveryTime = $('input[name="delivery_time"]:checked').val();
+              var pickedDate = $('input[name="picked_date"]').val();
+              var deliveryTimeModal = $('input[name="delivery_time_modal"]:checked').val();
+  
+              if (deliveryTime === "anotherTime") {
+                  deliveryTime = `${pickedDate} ${deliveryTimeModal}`;
+              }
+  
+              var attributes = {
+                  'Recipient Name': recipientName,
+                  'Recipient Phone': recipientPhone,
+                  'Ask Address': askAddress ? 'Yes' : 'No',
+                  'Keep Identity Secret': keepIdentitySecret ? 'Yes' : 'No',
+                  'Delivery Time': deliveryTime,
+                  'Delivery Status': askAddress ? 'Pending for Address Update' : 'Pending'
+
+              };
+           
+  
+              if (!askAddress) {
+                  attributes['Recipient Address'] = recipientAddress;
+                 attributes['zone'] = zone;
+                 attributes['area'] = area;
+              }
+  
+              $.ajax({
+                  type: 'POST',
+                  url: '/cart/update.js',
+                  data: {
+                      attributes: attributes
+                  },
+                  dataType: 'json',
+                  success: function() {
+                      window.location.href = '/checkout';
+                  },
+                  error: function(error) {
+                      console.log('Error saving delivery details', error);
+                  }
+              });
+          }
+  function saveProductMessage() {
+    var selectedProduct = $('input[name="selectedProduct"]:checked').val();
+    var customMessage = $('#customMessage').val();
+    var customLink = $('#customLink').val();
+
+    var properties = {
+        'Message': customMessage,
+        'Link': customLink
+    };
+
+    if (selectedProduct) {
+        addToCart(selectedProduct);
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '/cart/update.js',
+        data: {
+            attributes: properties
+        },
+        dataType: 'json',
+        success: function() {
+            $('#productModal').modal('hide');
+        },
+        error: function(error) {
+            console.log('Error saving product message', error);
+        }
+    });
+}
+         
+  $('input[name="delivery_time"]').on('change', function() {
+    if ($(this).val() === 'fastest' && $(this).is(':checked')) {
+        $('.deliveryT').html(''); 
+       $('.deliveryDate').html('');
+    }
+});
+          $('#saveAndContinue').click(function() {
+                event.preventDefault();
+                 updateContent();  
+                saveProductMessage();
+          });
+  
+          $('.card-img-top').click(function() {
+              showProductModal('product');
+          });
+  
+          $('.message-card').click(function() {
+              showProductModal('message');
+          });
+  
+          $('#chooseProduct').click(function() {
+              var selectedProduct = $('input[name="selectedProduct"]:checked').val();
+              if (selectedProduct) {
+                  addToCart(selectedProduct);
+                  $('#productModal').modal('hide');
+              } else {
+                  alert('Please select a product');
+              }
+          });
+  
+          // Add event listener for the "Next Step" button on delivery tab
+          $('#deliveryNextStep').click(function() {
+              saveDeliveryDetailsAndRedirect();
+          });
+  
+          // Add event listener for the "Next Step" button on customize tab
+          $('#customizeNextStep').click(function() {
+              current_fs = $(this).closest('fieldset');
+              next_fs = current_fs.next();
+  
+              // Add Class Active
+              $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+  
+              // Show the next fieldset
+              next_fs.show();
+              // Hide the current fieldset with style
+              current_fs.animate({opacity: 0}, {
+                  step: function(now) {
+                      opacity = 1 - now;
+                      current_fs.css({
+                          'display': 'none',
+                          'position': 'relative'
+                      });
+                      next_fs.css({'opacity': opacity});
+                  },
+                  duration: 600
+              });
+          });
+  
+          // Show delivery details when "Continue to Delivery" is clicked
+          function showDeliveryDetails() {
+              current_fs = $("#msform fieldset:visible");
+              next_fs = current_fs.next();
+  
+              // Add Class Active
+              $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+  
+              // Show the next fieldset
+              next_fs.show();
+              // Hide the current fieldset with style
+              current_fs.animate({opacity: 0}, {
+                  step: function(now) {
+                      opacity = 1 - now;
+                      current_fs.css({
+                          'display': 'none',
+                          'position': 'relative'
+                      });
+                      next_fs.css({'opacity': opacity});
+                  },
+                  duration: 600
+              });
+          }
+  
+          // Add event listener for the "Continue to Delivery" button
+          $('.wc-proceed-to-checkout .next').click(function() {
+              showDeliveryDetails();
+          });
+  
+          $(document).on('click', 'input[name="previous"]', function() {
+              current_fs = $(this).closest('fieldset');
+              previous_fs = current_fs.prev();
+  
+              // Remove Class Active
+              $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+  
+              // Show the previous fieldset
+              previous_fs.show();
+              // Hide the current fieldset with style
+              current_fs.animate({opacity: 0}, {
+                  step: function(now) {
+                      opacity = 1 - now;
+                      current_fs.css({
+                          'display': 'none',
+                          'position': 'relative'
+                      });
+                      previous_fs.css({'opacity': opacity});
+                  },
+                  duration: 600
+              });
+          });
+  
+          window.onpopstate = function() {
+              if (current_fs.index() > 0) {
+                  $(current_fs).find(".previous").click();
+              }
+          };
+  
+          $('#askAddress').change(function() {
+              if ($(this).is(':checked')) {
+                  $('#addressInfo').show();
+                  $('#recipientAddress').hide();
+                  $('#area').hide();
+                  $('#zone').hide();
+                
+              } else {
+                  $('#addressInfo').hide();
+                  $('#recipientAddress').show();
+                 $('#area').show();
+                  $('#zone').show();
+              }
+          });
+  
+          $('input[name="delivery_date"]').change(function() {
+              if ($(this).val() == 'pickDate') {
+                  $('#datePicker').show();
+              } else {
+                  $('#datePicker').hide();
+              }
+          });
+  
+          $('#confirmDeliveryTime').click(function() {
+              updateDeliveryDate(); 
+              updateDeliveryTime();
+              $('#deliveryModal').modal('hide');
+          });
+      });
+{% endjavascript %}

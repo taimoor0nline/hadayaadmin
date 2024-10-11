@@ -25,219 +25,200 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
 
   const handleStatusChange = async () => {
     if (order && newStatus) {
-      await updateOrderStatus(order.id.toString(), newStatus);
+      await updateOrderStatus(order.shopifyOrderId.toString(), newStatus);
       setOrder({ ...order, status: newStatus });
     }
     setShowModal(false);
   };
 
-  const printOrder = () => {
-    window.print();
+  // Calculate Subtotal Dynamically
+  const calculateSubtotal = () => {
+    if (order && order.items) {
+      return order.items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+    }
+    return 0;
   };
 
   if (!order) return <div>Loading...</div>;
 
+  const subtotal = calculateSubtotal();
+  const totalTax = parseFloat(order.currentTotalTax) || 0;
+  const totalDiscounts = parseFloat(order.currentTotalDiscounts) || 0;
+  const totalPrice = subtotal + totalTax - totalDiscounts;
+
+  // Method to print only the order detail content
+  const handlePrint = () => {
+    const printContent = document.getElementById('order-detail-content');
+    const originalContent = document.body.innerHTML;
+
+    if (printContent) {
+      // Set the body content to the order-detail content for printing
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
+
+      // Restore the original content after printing
+      document.body.innerHTML = originalContent;
+      window.location.reload(); // Reload to restore any dynamic functionality
+    }
+  };
+
   return (
     <div className="order-detail container mt-4">
-      <Card>
-        <Card.Body>
-          <Row className="mb-3">
-            <Col md={6}>
-              <h5>Area and Zone</h5>
-              <Table bordered size="sm">
-                <tbody>
-                  <tr>
-                    <td><strong>Area:</strong></td>
-                    <td>{order.area.name}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Zone:</strong></td>
-                    <td>{order.area.zone.name}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-            <Col md={6} className="d-flex justify-content-end align-items-start">
-              <div className="d-print-none">
-                <Button variant="secondary" onClick={printOrder} className="mr-2">
-                  Print
-                </Button>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
-                  Update Status
-                </Button>
-              </div>
-            </Col>
-          </Row>
 
-          <Row>
+<div className="d-flex justify-content-end mb-3 d-print-none">
+<Button variant="primary" onClick={() => setShowModal(true)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+    Update Status
+  </Button>
+
+  <Button variant="secondary" onClick={handlePrint}  style={{ padding: '10px 20px' }} >
+    Print
+  </Button>
+ 
+</div>
+
+ <hr/>
+      <div id="order-detail-content">
+        <Card>
+          <Card.Body>
+            <Row className="mb-3">
+
             <Col md={6}>
-              <h5>Sender Details</h5>
-              <Table bordered size="sm">
-                <tbody>
-                  <tr>
-                    <td><strong>Customer ID:</strong></td>
-                    <td>{order.sender.shopifyCustomerId}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Name:</strong></td>
-                    <td>{order.sender.firstName} {order.sender.lastName}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Email:</strong></td>
-                    <td>{order.sender.email}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Phone:</strong></td>
-                    <td>{order.sender.phone || "N/A"}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-            <Col md={6}>
-              <h5>Receiver Details</h5>
-              {order.recipients.map((recipient, index) => (
-                <div key={recipient.id} className="mb-3">
-                  <Table bordered size="sm">
+                <h5>Sender Details</h5>
+                <Table bordered size="sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>Name:</strong></td>
+                      <td colSpan={3}>{order.sender.firstName} {order.sender.lastName}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Email:</strong></td>
+                      <td>{order.sender.email}</td>
+                      <td><strong>Phone:</strong></td>
+                      <td>{order.sender.phone || "N/A"}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+
+              </Col>
+
+              <Col md={6}>
+                <h5>Area and Zone</h5>
+                <Table bordered size="sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>Area:</strong></td>
+                      <td>{order.area.name}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Zone:</strong></td>
+                      <td>{order.area.zone.name}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Col>
+
+              
+            </Row>
+
+            {/* Row containing Receiver Details */}
+            <Row>
+              <Col md={12}>
+                <h5>Receiver Details</h5>
+                {order.recipients.map((recipient, index) => (
+                  <Table bordered size="sm" key={recipient.id}>
                     <tbody>
                       <tr>
                         <td><strong>Recipient #{index + 1}:</strong></td>
                         <td>{recipient.recipientName}</td>
-                      </tr>
-                      <tr>
                         <td><strong>Phone:</strong></td>
                         <td>{recipient.recipientPhone}</td>
                       </tr>
                       <tr>
                         <td><strong>Address:</strong></td>
                         <td>{recipient.recipientAddress}</td>
-                      </tr>
-                      <tr>
                         <td><strong>Delivery Slot:</strong></td>
                         <td>{recipient.deliverySlot}</td>
                       </tr>
                       <tr>
                         <td><strong>Delivery Status:</strong></td>
                         <td>{recipient.deliveryStatus}</td>
-                      </tr>
-                      <tr>
                         <td><strong>Message:</strong></td>
                         <td>{recipient.message}</td>
                       </tr>
                     </tbody>
                   </Table>
-                </div>
-              ))}
-            </Col>
-          </Row>
+                ))}
+              </Col>
+            </Row>
 
-          <h5 className="mt-4">Order Summary</h5>
-          <Table bordered size="sm">
-            <tbody>
-              <tr>
-                <td><strong>Order ID:</strong></td>
-                <td>{order.id}</td>
-              </tr>
-              <tr>
-                <td><strong>Shopify Order ID:</strong></td>
-                <td>{order.shopifyOrderId}</td>
-              </tr>
-              <tr>
-                <td><strong>Status:</strong></td>
-                <td>{order.status}</td>
-              </tr>
-              <tr>
-                <td><strong>Subtotal Price:</strong></td>
-                <td>{order.currentSubtotalPrice} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Discounts:</strong></td>
-                <td>{order.currentTotalDiscounts} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Price:</strong></td>
-                <td>{order.currentTotalPrice} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Tax:</strong></td>
-                <td>{order.currentTotalTax} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Financial Status:</strong></td>
-                <td>{order.financialStatus}</td>
-              </tr>
-              <tr>
-                <td><strong>Fulfillment Status:</strong></td>
-                <td>{order.fulfillmentStatus || "Not fulfilled"}</td>
-              </tr>
-              <tr>
-                <td><strong>Created At:</strong></td>
-                <td>{new Date(order.createdAt).toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td><strong>Updated At:</strong></td>
-                <td>{new Date(order.updatedAt).toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td><strong>Contact Email:</strong></td>
-                <td>{order.contactEmail}</td>
-              </tr>
-              <tr>
-                <td><strong>Phone:</strong></td>
-                <td>{order.phone || "N/A"}</td>
-              </tr>
-            </tbody>
-          </Table>
-
-          <h5 className="mt-4">Items</h5>
-          <Table bordered size="sm">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>SKU</th>
-                <th>Vendor</th>
-                <th>Fulfillment Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map(item => (
-                <tr key={item.id}>
-                  <td>{item.title}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.price} {order.currency}</td>
-                  <td>{item.sku || "N/A"}</td>
-                  <td>{item.vendor}</td>
-                  <td>{item.fulfillmentStatus || "Not fulfilled"}</td>
+            <h5 className="mt-4">Order Information</h5>
+            <Table bordered size="sm">
+              <tbody>
+                <tr>
+                  <td><strong>Shopify Order ID:</strong></td>
+                  <td>{order.shopifyOrderId}</td>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+                <tr>
+                  <td><strong>Status:</strong></td>
+                  <td>{order.status}</td>
+                </tr>
+                <tr>
+                  <td><strong>Financial Status:</strong></td>
+                  <td>{order.financialStatus}</td>
+                </tr>
+              </tbody>
+            </Table>
 
-          <h5 className="mt-4">Order Totals</h5>
-          <Table bordered size="sm">
-            <tbody>
-              <tr>
-                <td><strong>Subtotal:</strong></td>
-                <td>{order.currentSubtotalPrice} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Discounts:</strong></td>
-                <td>{order.currentTotalDiscounts} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Tax:</strong></td>
-                <td>{order.currentTotalTax} {order.currency}</td>
-              </tr>
-              <tr>
-                <td><strong>Total Price:</strong></td>
-                <td>{order.currentTotalPrice} {order.currency}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
+            <h5 className="mt-4">Items</h5>
+            <Table bordered size="sm">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>SKU</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Sub-total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map(item => (
+                  <tr key={item.id}>
+                    <td>{item.title}</td>
+                    <td>{item.sku || "N/A"}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.price} {order.currency}</td>
+                    <td>{item.quantity * parseFloat(item.price)} {order.currency}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
 
+            <h5 className="mt-4">Order Totals</h5>
+            <Table bordered size="sm">
+              <tbody>
+                <tr>
+                  <td><strong>Subtotal:</strong></td>
+                  <td>{subtotal.toFixed(3)} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Discounts:</strong></td>
+                  <td>{totalDiscounts.toFixed(3)} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Tax:</strong></td>
+                  <td>{totalTax.toFixed(3)} {order.currency}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Price:</strong></td>
+                  <td>{totalPrice.toFixed(3)} {order.currency}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      </div>
+
+     
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Update Order Status</Modal.Title>
@@ -247,9 +228,9 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
             <Form.Group controlId="status">
               <Form.Label>New Status</Form.Label>
               <Form.Control as="select" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-                <option value="unfulfilled">Unfulfilled</option>
-                <option value="fulfilled">Fulfilled</option>
-                <option value="canceled">Canceled</option>
+              <option value="unfulfilled">Unfulfilled</option>
+              <option value="fulfilled">Fulfilled</option>
+              <option value="cancelled">Cancelled</option>
               </Form.Control>
             </Form.Group>
           </Form>

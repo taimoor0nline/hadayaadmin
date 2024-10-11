@@ -25,7 +25,7 @@ const DeliverySlot: React.FC = () => {
   const handleSelectSlot = async (id: number) => {
     const slot = await getDeliverySlotById(id);
     setSelectedSlot(slot);
-    openModal(); // Open the modal when a slot is selected for editing
+    openModal();
   };
 
   const handleCreateOrUpdate = async () => {
@@ -36,7 +36,7 @@ const DeliverySlot: React.FC = () => {
     }
     fetchDeliverySlots();
     setSelectedSlot(null);
-    closeModal(); // Close the modal after saving
+    closeModal(); 
   };
 
   const handleDelete = async (id: number) => {
@@ -104,7 +104,7 @@ const DeliverySlot: React.FC = () => {
                   <td>{slot.thresholdMinutes}</td>
                   <td>{slot.status}</td>
                   <td>
-                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectSlot(slot.id!)}>Edit</button>
+                    <button className="btn btn-sm btn-info mr-2"  style={{margin:'5px',padding:'5px'}} onClick={() => handleSelectSlot(slot.id!)}>Edit</button>
                     <button className="btn btn-sm btn-danger" onClick={() => handleDelete(slot.id!)}>Delete</button>
                   </td>
                 </tr>

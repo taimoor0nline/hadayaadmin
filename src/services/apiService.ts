@@ -6,10 +6,7 @@ const apiService = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
-    'Accept': '*/*',
-    'User-Agent': 'navigator.userAgent',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive',
+    'Accept': '*/*'
   },
 });
 

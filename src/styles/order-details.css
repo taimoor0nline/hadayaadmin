@@ -1,0 +1,43 @@
+@media print {
+    /* Hide all content by default */
+    body * {
+      visibility: hidden;
+    }
+  
+    /* Ensure the order-detail container is visible during print */
+    .order-detail {
+      visibility: visible;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  
+    /* Ensure that elements within the order-detail container are visible */
+    .order-detail * {
+      visibility: visible;
+    }
+  
+    /* Specifically hide the sidebar, header, and footer */
+    .sidebar, .header, .footer, .navbar, .d-print-none {
+      display: none !important;
+    }
+  
+    /* Any other layout containers or elements outside the order-detail */
+    .content-wrapper, .main-content, .side-menu {
+      display: none !important;
+    }
+  
+    /* Hide additional unwanted elements that may affect print */
+    .navbar, .breadcrumb, .page-header, .menu, .pagination {
+      display: none !important;
+    }
+  
+    /* Full page print width for the order detail */
+    .order-detail {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+  }
+  

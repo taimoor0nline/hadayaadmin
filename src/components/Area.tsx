@@ -35,7 +35,7 @@ const Area: React.FC = () => {
 
   const fetchZones = async () => {
     try {
-      const result = await getZones(currentPage); // Ensure you pass the current page number
+      const result = await getZones(currentPage); 
       setZones(Array.isArray(result.data) ? result.data : []);
       setTotalPages(result.totalPages);
     } catch (error) {
@@ -156,12 +156,8 @@ const Area: React.FC = () => {
                   <td>{area.name}</td>
                   <td>{area.zone.name}</td>
                   <td>
-                    <button className="btn btn-sm btn-info mr-2" onClick={() => handleSelectArea(area)}>
-                      <FaEdit />
-                    </button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(area.id!)}>
-                      <FaTrash />
-                    </button>
+                    <button className="btn btn-sm btn-info mr-2"  style={{margin:'5px',padding:'5px'}} onClick={() => handleSelectArea(area)}>Edit</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(area.id!)}>Delete</button>
                   </td>
                 </tr>
               ))}

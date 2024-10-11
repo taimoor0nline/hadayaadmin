@@ -13,6 +13,7 @@ interface IOrderSearchParams {
   senderName?: string;
 }
 
+
 export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPagedResult<IOrder>> => {
   const {
     page = 1,
@@ -22,10 +23,9 @@ export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPaged
     email,
     recipientPhone,
     area,
-    senderName
+    senderName,
   } = params;
 
-  // Adding a cache-busting parameter using the current timestamp
   const cacheBuster = new Date().getTime();
   const response = await apiService.get('shopify/list', {
     params: {
@@ -37,25 +37,41 @@ export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPaged
       recipientPhone,
       area,
       senderName,
-      ///_: cacheBuster, // The underscore is often used conventionally for cache-busting
+      _: cacheBuster, 
     },
   });
 
   return response.data;
 };
 
+
 export const getOrderById = async (orderId: string): Promise<IOrder> => {
-  //const cacheBuster = new Date().getTime(); // Cache-busting parameter
-
-  // const response = await apiService.get(`shopify/${orderId}`, {
-  //   params: { _: cacheBuster }, // Adding the cache-busting parameter
-  // });
-
   const response = await apiService.get(`shopify/${orderId}`);
-
   return response.data;
 };
 
+
 export const updateOrderStatus = async (orderId: string, status: string) => {
-  // Implement the API call logic to update order status
+  debugger;
+  try {
+    const response = await apiService.put(`shopify/update/status/${orderId}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+};
+
+
+export const updateRecipientDetails = async (orderId: string, recipientPhone?: string, recipientAddress?: string) => {
+  try {
+    const response = await apiService.put(`shopify/update/recipient/${orderId}`, {
+      recipientPhone,
+      recipientAddress,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating recipient details:', error);
+    throw error;
+  }
 };
