@@ -11,6 +11,8 @@ import OrderListPage from '../pages/ShopifyOrderListPage';
 import ZonePage from '../pages/ZonePage';
 import AreaPage from '../pages/AreaPage';
 import ShopifyOrderListPage from '../pages/ShopifyOrderListPage';
+import DashboardPage from '../pages/DashboardPage';
+import PackingSlipPage from '../pages/PackingSlipPage';
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -21,14 +23,17 @@ const AppRoutes: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-      <Route path="/orders/list" element={<PrivateRoute><ShopifyOrderListPage/></PrivateRoute>} />  {/* OrderPage should map to the order listing */}
-      <Route path="/orders/detail/:orderId" element={<PrivateRoute><OrderDetailPage /></PrivateRoute>} />  {/* OrderDetailPage should map to order detail */}
-      <Route path="/customers" element={<PrivateRoute><CustomerPage /></PrivateRoute>} />
-      <Route path="/customers/:customerId" element={<PrivateRoute><CustomerDetailPage /></PrivateRoute>} />
-      <Route path="/delivery-slot" element={<PrivateRoute><DeliverySlotPage /></PrivateRoute>} />  
-      <Route path="/zone" element={<PrivateRoute><ZonePage /></PrivateRoute>} /> 
-      <Route path="/area" element={<PrivateRoute><AreaPage /></PrivateRoute>} />   
+      {/* <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} /> */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/orders/list" element={<ShopifyOrderListPage />} />  {/* OrderPage should map to the order listing */}
+      <Route path="/orders/detail/:orderId" element={<OrderDetailPage />} />  {/* OrderDetailPage should map to order detail */}
+      <Route path="/customers" element={<CustomerPage />} />
+      <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
+      <Route path="/delivery-slot" element={<DeliverySlotPage />} />
+      <Route path="/zone" element={<ZonePage />} />
+      <Route path="/area" element={<AreaPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/packing-slip" element={<PackingSlipPage />} />
     </Routes>
   </Router>
 );
