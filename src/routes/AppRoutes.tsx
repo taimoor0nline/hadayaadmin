@@ -13,6 +13,7 @@ import AreaPage from '../pages/AreaPage';
 import ShopifyOrderListPage from '../pages/ShopifyOrderListPage';
 import DashboardPage from '../pages/DashboardPage';
 import PackingSlipPage from '../pages/PackingSlipPage';
+import DeliveryStatusSummaryPage from '../pages/DeliveryStatusSummaryPage';  // Make sure this is correctly imported
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -23,10 +24,10 @@ const AppRoutes: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      {/* <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} /> */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/orders/list" element={<ShopifyOrderListPage />} />  {/* OrderPage should map to the order listing */}
-      <Route path="/orders/detail/:orderId" element={<OrderDetailPage />} />  {/* OrderDetailPage should map to order detail */}
+      <Route path="/delivery-status-summary" element={<DeliveryStatusSummaryPage />} />
+      <Route path="/orders/list" element={<ShopifyOrderListPage />} />
+      <Route path="/orders/detail/:orderId" element={<OrderDetailPage />} />
       <Route path="/customers" element={<CustomerPage />} />
       <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
       <Route path="/delivery-slot" element={<DeliverySlotPage />} />
@@ -37,6 +38,5 @@ const AppRoutes: React.FC = () => (
     </Routes>
   </Router>
 );
-
 
 export default AppRoutes;

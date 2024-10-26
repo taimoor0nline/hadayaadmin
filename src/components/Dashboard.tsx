@@ -9,7 +9,7 @@ const Dashboard = () => {
         <Card>
             <Card.Header>
                 <div className="d-flex justify-content-between">
-                    <h5>Order # 1234567</h5>
+                    {/* <h5>Order # 1234567</h5> */}
                     <Button style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                         <RiPrinterLine />
                         <span>

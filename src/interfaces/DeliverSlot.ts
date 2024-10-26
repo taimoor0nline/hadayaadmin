@@ -1,21 +1,22 @@
 export interface IDeliverySlot {
   id?: number;
-  slotName?: string;
-  startDate?: string;
-  endDate?: string;
-  startDelivery?: string;
-  endDelivery?: string;
-  startTime?: string;
-  endTime?: string;
-  thresholdMinutes?: number;
-  priority? : string,
-  charges? : string,
-  status?: IDeliverySlotStatus;
-  availableDays?: string[]; // Add this line
+  deliverySlotName: string;
+  deliveryCharges: number;
+  startDate: string;
+  endDate: string;
+  startDelivery: string;
+  endDelivery: string;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  priority: number;
+  status: IDeliverySlotStatus;
+  availableDays: string[];
+  // createdAt?: Date;
+  // updatedAt?: Date;
 }
-
 
 export enum IDeliverySlotStatus {
   Active = 'ACTIVE',
-  Inactive = 'INACTIVE',
+  Inactive = 'INACTIVE'
 }

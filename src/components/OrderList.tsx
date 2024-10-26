@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import Pagination from '../components/Pagination';
+import Pagination from './Pagination';
 import { getOrders } from '../services/orderService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import { IMappedOrder } from '../interfaces/Order';
 
-const OrderListPage: React.FC = () => {
+interface OrderListProps {
+  slot?: string; 
+  status?: string;
+}
+
+const OrderList: React.FC<OrderListProps> = ({ slot = null, status = null }) => {
   const [orders, setOrders] = useState<IMappedOrder[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -14,19 +19,18 @@ const OrderListPage: React.FC = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [currentPage]);
+  }, [currentPage, slot, status]);
 
   const fetchOrders = async () => {
     const searchParams = {
+      page: currentPage,
+      limit: 10,
+      slot: slot ?? undefined,   
+      status: status ?? undefined,
       [searchField]: searchValue,
     };
   
-    const result = await getOrders({
-      page: currentPage,
-      limit: 10,
-      ...searchParams,
-    });
-
+    const result = await getOrders(searchParams);
     const mappedOrders: IMappedOrder[] = result.data.map((order: any) => ({
       shopifyOrderId: order.shopifyOrderId || 'N/A',
       zoneName: order.zoneName || 'N/A',
@@ -67,6 +71,7 @@ const OrderListPage: React.FC = () => {
               <h2>Order List</h2>
             </div>
             <div className="card-body">
+              {/* Search Fields */}
               <div className="row mb-3">
                 <div className="col-md-3">
                   <select
@@ -100,6 +105,8 @@ const OrderListPage: React.FC = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Orders Table */}
               <table className="table table-striped">
                 <thead>
                   <tr>
@@ -139,6 +146,8 @@ const OrderListPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+
+              {/* Pagination */}
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             </div>
           </div>
@@ -148,4 +157,4 @@ const OrderListPage: React.FC = () => {
   );
 };
 
-export default OrderListPage;
+export default OrderList;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import DeliverySlot from '../components/DeliverSlot';
-import { Button } from 'react-bootstrap';
+import DeliveryStatusSummaryTable from '../components/DeliveryStatusSummaryTable';
 
-const DeliverySlotPage: React.FC = () => {
+const DeliveryStatusSummaryPage: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -19,7 +19,7 @@ const DeliverySlotPage: React.FC = () => {
       }
     };
 
-    handleResize(); 
+    handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
@@ -28,7 +28,6 @@ const DeliverySlotPage: React.FC = () => {
   return (
     <div className="d-flex">
       <Sidebar isMobile={isMobile} show={showSidebar} handleClose={handleClose} />
-
       <div className="flex-grow-1">
         <Navbar />
         {isMobile && (
@@ -36,10 +35,17 @@ const DeliverySlotPage: React.FC = () => {
             Toggle Sidebar
           </Button>
         )}
-        <DeliverySlot />
+        <Container fluid>
+          <Row className="mt-3">
+            <Col>
+              <h2>Delivery Status Summary</h2>
+              <DeliveryStatusSummaryTable />
+            </Col>
+          </Row>
+        </Container>
       </div>
     </div>
   );
 };
 
-export default DeliverySlotPage;
+export default DeliveryStatusSummaryPage;

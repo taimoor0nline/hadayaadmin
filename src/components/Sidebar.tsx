@@ -34,6 +34,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, show, handleClose }) => {
           <BsGearFill className="me-2" />
           Delivery Slots
         </Link>
+        <Link to="/delivery-status-summary" className="nav-link custom-nav-link"> {/* New route for Delivery Status Summary */}
+          <BsFillPeopleFill className="me-2" />
+          Delivery Status Summary
+        </Link>
         <Link to="/orders/list" className="nav-link custom-nav-link">
           <BsChatDotsFill className="me-2" />
           Orders
@@ -58,11 +62,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, show, handleClose }) => {
     </div>
   );
 
-  // If on mobile, use an Offcanvas to toggle the sidebar
+
   return isMobile ? (
     <Offcanvas show={show} onHide={handleClose} style={{ width: '400px', background: '#343a40' }}>
-      <Offcanvas.Header closeButton>
-      </Offcanvas.Header>
+      <Offcanvas.Header closeButton />
       <Offcanvas.Body>
         {sidebarContent}
       </Offcanvas.Body>

@@ -11,7 +11,7 @@ export const getDeliverySlots = async (
 };
 
 export const getDeliverySlotById = async (id: number): Promise<IDeliverySlot> => {
-  const response = await apiService.get(`/delivery-slot/detail/${id}`);
+  const response = await apiService.get(`/delivery-slot/${id}`);
   return response.data;
 };
 

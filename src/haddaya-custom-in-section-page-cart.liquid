@@ -23,9 +23,10 @@
                                 <h4>Gift Card & Message</h4>
                               </div>
                             </div>
+
                             <div class="row">
                               <div class="col-md-6 text-center">
-                                <div class="card-img-top">
+                                <div class="card-img-top" data-tab="product">
                                   <img
                                     class="card-image"
                                     src="https://placehold.co/600x400?text=Choose+Card"
@@ -37,11 +38,11 @@
                                 </div>
                               </div>
                               <div class="col-md-6 text-center">
-                                <div class="message-card">
+                                <div class="message-card" data-tab="message">
                                   <img
                                     src="https://placehold.co/600x400?text=Your+Message"
                                     alt="Message Placeholder"
-                                    class="card-image"
+                                    class="msg-image"
                                   >
                                   <div class="indicator-product">
                                     <i class="fas fa-check-circle text-success"></i>
@@ -50,6 +51,7 @@
                               </div>
                             </div>
                           </div>
+
                           <input
                             type="button"
                             name="next"
@@ -116,25 +118,27 @@
                                 </div>
                               </div>
                             </div>
-                            
                             <div class="form-group row" id="zone">
-                                <label class="col-sm-2 col-form-label">Zone *</label>
-                                <div class="col-sm-10">
-                                  <select name="zone" class="form-control">
-                                    <option disabled selected>Select your Zone</option>
-                                  </select>
-                                </div>
+                              <label class="col-sm-2 col-form-label">Zone *</label>
+                              <div class="col-sm-10">
+                                <select name="zone" class="form-control">
+                                  <option>Select your Zone</option>
+                                  <option value="al-batinah-north">Al Batinah North</option>
+                                  <option value="al-batinah-south">Al Batinah South</option>
+                                  <option value="muscat-governorate">Muscat Governorate</option>
+                                  <option value="al-dakhiliyah">Al Dakhiliyah</option>
+                                  <option value="musandam">Musandam</option>
+                                </select>
                               </div>
-
-                              <div class="form-group row" id="area">
-                                <label class="col-sm-2 col-form-label">Area *</label>
-                                <div class="col-sm-10">
-                                  <select name="area" class="form-control">
-                                    <option disabled selected>Select your Area</option>
-                                  </select>
-                                </div>
+                            </div>
+                            <div class="form-group row" id="area">
+                              <label class="col-sm-2 col-form-label">Area *</label>
+                              <div class="col-sm-10">
+                                <select name="area" class="form-control">
+                                  <option disabled selected>Select your Area</option>
+                                </select>
                               </div>
-
+                            </div>
                             <div class="form-group row" id="recipientAddress">
                               <label class="col-sm-2 col-form-label">Recipient Address *</label>
                               <div class="col-sm-10">
@@ -208,9 +212,7 @@
             <div class="card">
               <div class="row">
                 <div class="col-md-8 cart">
-                  <div class="col align-self-left text-right text-muted">
-                    <button class="btn btn-outline-primary" id="show-packing">Packing</button>
-                  </div>
+                  <div class="col align-self-left text-right text-muted"><button>Packing</button></div>
                   <div class="col align-self-center text-right text-muted">Total {{ cart.item_count }} items</div>
                   <div class="cart-items">
                     {% for item in cart.items %}
@@ -285,7 +287,7 @@
                     <div class="col" style="padding-left:0;">Total</div>
                     <div class="col text-right">{{ cart.total_price | money_without_trailing_zeros }}</div>
                   </div>
-                  <button class="btn" onclick="location.href='/checkout'">CHECKOUT</button>
+                  <button class="btn" id="checkoutButton" disabled>CHECKOUT</button>
                 </div>
               </div>
             </div>
@@ -345,31 +347,38 @@
         <div class="tab-content">
           <div class="tab-pane active" id="products" role="tabpanel" aria-labelledby="products-tab">
             <div class="container">
+              {% assign products = collections.cards.products %}
               <div class="row">
-                {% assign products = collections.cards.products %}
                 {% if products.size > 0 %}
-                  {% for product in products %}
-                    {% for variant in product.variants %}
-                      <div class="col-md-4">
-                        <div class="product-card">
-                          <input
-                            type="radio"
-                            name="selectedProduct"
-                            id="product-{{ variant.id }}"
-                            value="{{ variant.id }}"
-                          >
-                          <label for="product-{{ variant.id }}">
-                            <img
-                              src="{{ product.featured_image | img_url: 'medium' }}"
-                              alt="{{ product.title }}"
-                              class="modal-image"
+                  <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                      {% for product in products %}
+                        {% for variant in product.variants %}
+                          <div class="swiper-slide">
+                            <input
+                              type="radio"
+                              name="selectedProduct"
+                              id="product-{{ variant.id }}"
+                              value="{{ variant.id }}"
                             >
-                            <p>{{ variant.price | money_without_trailing_zeros }}</p>
-                          </label>
-                        </div>
-                      </div>
-                    {% endfor %}
-                  {% endfor %}
+                            <label for="product-{{ variant.id }}">
+                              <div class="product-card">
+                                <img
+                                  src="{{ product.featured_image | img_url: 'medium' }}"
+                                  alt="{{ product.title }}"
+                                  class="modal-image"
+                                >
+                                <p>{{ variant.price | money_without_trailing_zeros }}</p>
+                              </div>
+                            </label>
+                          </div>
+                        {% endfor %}
+                      {% endfor %}
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                  </div>
                 {% else %}
                   <p>No products found in this collection.</p>
                 {% endif %}
@@ -506,1281 +515,1037 @@
   </div>
 </div>
 
-
-
-<!-- Packing Modal Content -->
-
-<!-- Packing Modal -->
-<div class="modal fade" id="packingModal" tabindex="-1" role="dialog" aria-labelledby="packingModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="packingModalLabel">Choose Your Packing</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="container">
-          <div class="row">
-            <!-- Assign packing collection -->
-            {% assign packings = collections['packing'].products %}
-            
-            <!-- Check if there are products in the packing collection -->
-            {% if packings.size > 0 %}
-              <!-- Loop through each product and variant in the packing collection -->
-              {% for packing in packings %}
-                {% for variant in packing.variants %}
-                  <div class="col-md-4">
-                    <div class="packing-item-card">
-                      <!-- Radio button to select packing -->
-                      <input
-                        type="radio"
-                        name="selectedPacking"
-                        id="packing-{{ variant.id }}"
-                        value="{{ variant.id }}"
-                        {% if cart.attributes.packing_id == variant.id %}checked{% endif %}
-                      >
-                      <label for="packing-{{ variant.id }}">
-                        <!-- Display packing image -->
-                        <img
-                          src="{{ packing.featured_image | img_url: 'medium' }}"
-                          alt="{{ packing.title }}"
-                          class="packing-modal-image"
-                        >
-                        <!-- Display packing title and price -->
-                        <p>{{ packing.title }} - {{ variant.price | money_without_trailing_zeros }}</p>
-                      </label>
-                    </div>
-                  </div>
-                {% endfor %}
-              {% endfor %}
-            {% else %}
-              <p>No packing items found.</p>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="savePackingSelection" style="background-color: #f90; border-color: #f90;">
-          Save and Continue
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
+<script>
+  var swiper = new Swiper(".mySwiper", {
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    loop: true,
+      slidesPerView: "2",
+    spaceBetween: 20,
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+  });
+</script>
 
 {% stylesheet %}
-  .delivery-button {
-      background-color: #f90 !important;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 4px;
-      border: 2px solid transparent;
-  }
-
-  .delivery-button:hover {
-      background-color: #e08900 !important;
-  }
-
-  .delivery-button.active,
-  .delivery-button:active {
-      background-color: #876022 !important;
-  }
-
-    .delivery-date.active,
-    .delivery-date:active {
-      background-color: #876022 !important;
-  }
-
-      .delivery_time.active,
-    .delivery_time:active {
-      background-color: #876022 !important;
-  }
-
-    .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #f90;
-        border-color: #f90;
-    }
-
-    #keepIdentitySecret:checked{
-        background-color: #f90;
-        border-color: #f90;
-    }
-
-    .modal-image,
-    .card-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
-
-    .indicator-message,
-    .indicator-product {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        display: none;
-    }
-
-    .cart-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-    }
-
-    .cart-item.even {
-        background-color: #f1f1f1;
-    }
-
-    .cart-item-thumbnail img {
-        max-width: 80px;
-        border-radius: 10px;
-    }
-
-    .cart-item-details {
-        flex-grow: 1;
-        margin-left: 15px;
-    }
-
-    .cart-item-title {
-        font-weight: bold;
-        display: block;
-    }
-
-    .cart-item-price {
-        color: #000;
-        font-weight: bold;
-    }
-
-    .quantity-wrapper {
-        display: flex;
-        align-items: center;
-        border: 1px solid rgba(0, 0, 0, 0.137);
-        padding: 5px;
-        border-radius: 4px;
-        height: 40px;
-    }
-
-    .quantity-wrapper .quantity-btn {
-        background: none;
-        border: none;
-        font-size: 1rem;
-        padding: 5px;
-        cursor: pointer;
-    }
-
-    .quantity-wrapper .quantity-btn:focus {
-        outline: none;
-    }
-
-    .quantity-wrapper .js-qty {
-        display: flex;
-        align-items: center;
-    }
-
-    .quantity-wrapper .js-qty__num {
-        width: 40px;
-        text-align: center;
-        border: none;
-        outline: none;
-    }
-
-    .quantity-btn {
-        border: none;
-        background-color: #fff;
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-
-    .quantity-btn:focus {
-        outline: none;
-    }
-
-    .quantity-btn:hover {
-        background-color: #f0f0f0;
-    }
-
-    .quantity-input {
-        width: 50px;
-        text-align: center;
-        border: none;
-        border-left: 1px solid #ced4da;
-        border-right: 1px solid #ced4da;
-    }
-
-    .quantity-input:focus {
-        outline: none;
-    }
-
-    .cart-item-remove a {
-        color: #d9534f;
-        font-size: 20px;
-        cursor: pointer;
-        text-decoration: none;
-        margin-left: 10px;
-    }
-
-    .cart-item-remove a:hover {
-        color: #c9302c;
-    }
-
-    .shopping-cart-section .title {
-        margin-bottom: 5vh;
-    }
-
-    .shopping-cart-section .card {
-        margin: auto;
-        max-width: 950px;
-        width: 90%;
-        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-radius: 1rem;
-        border: transparent;
-    }
-
-    .shopping-cart-section .cart {
-        background-color: #fff;
-        padding: 4vh 5vh;
-        border-bottom-left-radius: 1rem;
-        border-top-left-radius: 1rem;
-    }
-
-    .shopping-cart-section .summary {
-        background-color: #ddd;
-        border-top-right-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        padding: 4vh;
-        color: rgb(65, 65, 65);
-    }
-
-    .shopping-cart-section .summary .col-2 {
-        padding: 0;
-    }
-
-    .shopping-cart-section .summary .col-10 {
-        padding: 0;
-    }
-
-    .shopping-cart-section .row {
-        margin: 0;
-    }
-
-    .shopping-cart-section .title b {
-        font-size: 1.5rem;
-    }
-
-    .shopping-cart-section .main {
-        margin: 0;
-        padding: 2vh 0;
-        width: 100%;
-    }
-
-    .shopping-cart-section .col-2,
-    .shopping-cart-section .col {
-        padding: 0 1vh;
-    }
-
-    .shopping-cart-section .card a {
-        padding: 0 1vh;
-    }
-
-    .shopping-cart-section .close {
-        margin-left: auto;
-        font-size: 0.7rem;
-    }
-
-    .shopping-cart-section img {
-        width: 3.5rem;
-    }
-
-    .shopping-cart-section .back-to-shop {
-        margin-top: 4.5rem;
-    }
-
-    .shopping-cart-section h5 {
-        margin-top: 4vh;
-    }
-
-    .shopping-cart-section hr {
-        margin-top: 1.25rem;
-    }
-
-    .shopping-cart-section form {
-        padding: 2vh 0;
-    }
-
-    .shopping-cart-section select {
-        border: 1px solid rgba(0, 0, 0, 0.137);
-        padding: 1.5vh 1vh;
-        margin-bottom: 4vh;
-        outline: none;
-        width: 100%;
-        background-color: rgb(247, 247, 247);
-    }
-
-    .shopping-cart-section input {
-        border: 1px solid rgba(0, 0, 0, 0.137);
-        padding: 1vh;
-        margin-left: 10px;
-        outline: none;
-        width: 100%;
-        background-color: none;
-    }
-
-    .shopping-cart-section input:focus::-webkit-input-placeholder {
-        color: transparent;
-    }
-
-    .shopping-cart-section .btn {
-        background-color: #f90;
-        border-color: #f90;
+    .delivery-button {
+        background-color: #f90 !important;
         color: white;
-        width: 100%;
-        font-size: 0.7rem;
-        margin-top: 4vh;
-        padding: 1vh;
-        border-radius: 0;
-    }
-
-    .shopping-cart-section .btn:focus {
-        box-shadow: none;
-        outline: none;
-        color: white;
-        -webkit-box-shadow: none;
-        -webkit-user-select: none;
-        transition: none;
-    }
-
-    .shopping-cart-section .btn:hover {
-        color: white;
-    }
-
-    .shopping-cart-section .card a {
-        color: black;
-    }
-
-    .shopping-cart-section .card a:hover {
-        color: black;
-        text-decoration: none;
-    }
-
-    .shopping-cart-section #code {
-        background-image: linear-gradient(to left, rgba(255, 255, 255, 0.253), rgba(255, 255, 255, 0.185)), url("https://img.icons8.com/small/16/000000/long-arrow-right.png");
-        background-repeat: no-repeat;
-        background-position-x: 95%;
-        background-position-y: center;
-    }
-
-    .quantity-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #000;
-    }
-
-    .quantity-btn:hover {
-        background-color: #f0f0f0;
-    }
-
-    #grad1 {
-        background-color: : #9C27B0;
-        background-image: linear-gradient(120deg, #FF4081, #81D4FA);
-    }
-
-    /*form styles*/
-    #msform {
-        text-align: center;
-        position: relative;
-        margin-top: 20px;
-    }
-
-    #msform fieldset .form-card {
-        background: white;
-        border: 0 none;
-        border-radius: 0px;
-        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
-        padding: 20px 40px 30px 40px;
-        box-sizing: border-box;
-        width: 94%;
-        margin: 0 3% 20px 3%;
-
-        /*stacking fieldsets above each other*/
-        position: relative;
-    }
-
-    #msform fieldset {
-        background: white;
-        border: 0 none;
-        border-radius: 0.5rem;
-        box-sizing: border-box;
-        width: 100%;
-        margin: 0;
-        padding-bottom: 20px;
-
-        /*stacking fieldsets above each other*/
-        position: relative;
-    }
-
-    /*Hide all except first fieldset*/
-    #msform fieldset:not(:first-of-type) {
-        display: none;
-    }
-
-    #msform fieldset .form-card {
-        text-align: left;
-        color: #9E9E9E;
-    }
-
-    #msform input, #msform textarea {
-        padding: 0px 8px 4px 8px;
-        border: none;
-        border-bottom: 1px solid #ccc;
-        border-radius: 0px;
-        margin-bottom: 25px;
-        margin-top: 2px;
-        width: 100%;
-        box-sizing: border-box;
-        font-family: montserrat;
-        color: #2C3E50;
+        padding: 10px 20px;
         font-size: 16px;
-        letter-spacing: 1px;
-    }
-
-    #msform input:focus, #msform textarea:focus {
-        -moz-box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        box-shadow: none !important;
-        border: none;
-        font-weight: bold;
-        border-bottom: 2px solid #f90;
-        outline-width: 0;
-    }
-
-    /*Blue Buttons*/
-    #msform .action-button {
-        width: 100px;
-        background: #f90;
-        font-weight: bold;
-        color: white;
-        border: 0 none;
-        border-radius: 0px;
         cursor: pointer;
-        padding: 10px 5px;
-        margin: 10px 5px;
+        border-radius: 4px;
+        border: 2px solid transparent;
     }
 
-    #msform .action-button:hover, #msform .action-button:focus {
-        box-shadow: 0 0 0 2px white, 0 0 0 3px #f90;
+    .delivery-button:hover {
+        background-color: #e08900 !important;
     }
 
-    /*Previous Buttons*/
-    #msform .action-button-previous {
-        width: 100px;
-        background: #616161;
-        font-weight: bold;
-        color: white;
-        border: 0 none;
-        border-radius: 0px;
-        cursor: pointer;
-        padding: 10px 5px;
-        margin: 10px 5px;
+    .delivery-button.active,
+    .delivery-button:active {
+        background-color: #876022 !important;
     }
 
-    #msform .action-button-previous:hover, #msform .action-button-previous:focus {
-        box-shadow: 0 0 0 2px white, 0 0 0 3px #616161;
+      .delivery-date.active,
+      .delivery-date:active {
+        background-color: #876022 !important;
     }
 
-    /*Dropdown List Exp Date*/
-    select.list-dt {
-        border: none;
-        outline: 0;
-        border-bottom: 1px solid #ccc;
-        padding: 2px 5px 3px 5px;
-        margin: 2px;
+        .delivery_time.active,
+      .delivery_time:active {
+        background-color: #876022 !important;
     }
 
-    select.list-dt:focus {
-        border-bottom: 2px solid #f90;
-    }
+      .custom-control-input:checked ~ .custom-control-label::before {
+          background-color: #f90;
+          border-color: #f90;
+      }
 
-    /*The background card*/
-    .card {
-        z-index: 0;
-        border: none;
-        border-radius: 0.5rem;
-        position: relative;
-    }
+      #keepIdentitySecret:checked{
+          background-color: #f90;
+          border-color: #f90;
+      }
 
-    /*FieldSet headings*/
-    .fs-title {
-        font-size: 25px;
-        color: #2C3E50;
-        margin-bottom: 10px;
-        font-weight: bold;
-        text-align: left;
-    }
+      .modal-image,
+      .card-image,msg-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+      }
 
-    /*progressbar*/
-    #progressbar {
-        margin-bottom: 30px;
-        overflow: hidden;
-        color: lightgrey;
-    }
+      .indicator-message,
+      .indicator-product {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          display: none;
+      }
 
-    #progressbar .active {
-        color: #f90;
-    }
+      .cart-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 15px;
+          margin-bottom: 10px;
+          background-color: #f9f9f9;
+          border-radius: 10px;
+      }
 
-    #progressbar li {
-        list-style-type: none;
-        font-size: 12px;
-        width: 50%;
-        float: left;
-        position: relative;
-    }
+      .cart-item.even {
+          background-color: #f1f1f1;
+      }
 
-    /*Icons in the ProgressBar*/
-    #progressbar #customize:before {
-        font-family: FontAwesome;
-        content: "1";
-    }
+      .cart-item-thumbnail img {
+          max-width: 80px;
+          border-radius: 10px;
+      }
 
-    #progressbar #personal:before {
-        font-family: FontAwesome;
-        content: "2";
-    }
+      .cart-item-details {
+          flex-grow: 1;
+          margin-left: 15px;
+      }
 
-    /*ProgressBar before any progress*/
-    #progressbar li:before {
-        width: 50px;
-        height: 50px;
-        line-height: 45px;
-        display: block;
-        font-size: 18px;
-        color: #ffffff;
-        background: lightgray;
-        border-radius: 50%;
-        margin: 0 auto 10px auto;
-        padding: 2px;
-    }
+      .cart-item-title {
+          font-weight: bold;
+          display: block;
+      }
 
-    /*ProgressBar connectors*/
-    #progressbar li:after {
-        content: '';
+      .cart-item-price {
+          color: #000;
+          font-weight: bold;
+      }
+
+      .quantity-wrapper {
+          display: flex;
+          align-items: center;
+          border: 1px solid rgba(0, 0, 0, 0.137);
+          padding: 5px;
+          border-radius: 4px;
+          height: 40px;
+      }
+
+      .quantity-wrapper .quantity-btn {
+          background: none;
+          border: none;
+          font-size: 1rem;
+          padding: 5px;
+          cursor: pointer;
+      }
+
+      .quantity-wrapper .quantity-btn:focus {
+          outline: none;
+      }
+
+      .quantity-wrapper .js-qty {
+          display: flex;
+          align-items: center;
+      }
+
+      .quantity-wrapper .js-qty__num {
+          width: 40px;
+          text-align: center;
+          border: none;
+          outline: none;
+      }
+
+      .quantity-btn {
+          border: none;
+          background-color: #fff;
+          padding: 5px 10px;
+          cursor: pointer;
+      }
+
+      .quantity-btn:focus {
+          outline: none;
+      }
+
+      .quantity-btn:hover {
+          background-color: #f0f0f0;
+      }
+
+      .quantity-input {
+          width: 50px;
+          text-align: center;
+          border: none;
+          border-left: 1px solid #ced4da;
+          border-right: 1px solid #ced4da;
+      }
+
+      .quantity-input:focus {
+          outline: none;
+      }
+
+      .cart-item-remove a {
+          color: #d9534f;
+          font-size: 20px;
+          cursor: pointer;
+          text-decoration: none;
+          margin-left: 10px;
+      }
+
+      .cart-item-remove a:hover {
+          color: #c9302c;
+      }
+
+      .shopping-cart-section .title {
+          margin-bottom: 5vh;
+      }
+
+      .shopping-cart-section .card {
+          margin: auto;
+          max-width: 950px;
+          width: 90%;
+          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          border-radius: 1rem;
+          border: transparent;
+      }
+
+      .shopping-cart-section .cart {
+          background-color: #fff;
+          padding: 4vh 5vh;
+          border-bottom-left-radius: 1rem;
+          border-top-left-radius: 1rem;
+      }
+
+      .shopping-cart-section .summary {
+          background-color: #ddd;
+          border-top-right-radius: 1rem;
+          border-bottom-right-radius: 1rem;
+          padding: 4vh;
+          color: rgb(65, 65, 65);
+      }
+
+      .shopping-cart-section .summary .col-2 {
+          padding: 0;
+      }
+
+      .shopping-cart-section .summary .col-10 {
+          padding: 0;
+      }
+
+      .shopping-cart-section .row {
+          margin: 0;
+      }
+
+      .shopping-cart-section .title b {
+          font-size: 1.5rem;
+      }
+
+      .shopping-cart-section .main {
+          margin: 0;
+          padding: 2vh 0;
+          width: 100%;
+      }
+
+      .shopping-cart-section .col-2,
+      .shopping-cart-section .col {
+          padding: 0 1vh;
+      }
+
+      .shopping-cart-section .card a {
+          padding: 0 1vh;
+      }
+
+      .shopping-cart-section .close {
+          margin-left: auto;
+          font-size: 0.7rem;
+      }
+
+      .shopping-cart-section img {
+          width: 3.5rem;
+      }
+
+      .shopping-cart-section .back-to-shop {
+          margin-top: 4.5rem;
+      }
+
+      .shopping-cart-section h5 {
+          margin-top: 4vh;
+      }
+
+      .shopping-cart-section hr {
+          margin-top: 1.25rem;
+      }
+
+      .shopping-cart-section form {
+          padding: 2vh 0;
+      }
+
+      .shopping-cart-section select {
+          border: 1px solid rgba(0, 0, 0, 0.137);
+          padding: 1.5vh 1vh;
+          margin-bottom: 4vh;
+          outline: none;
+          width: 100%;
+          background-color: rgb(247, 247, 247);
+      }
+
+      .shopping-cart-section input {
+          border: 1px solid rgba(0, 0, 0, 0.137);
+          padding: 1vh;
+          margin-left: 10px;
+          outline: none;
+          width: 100%;
+          background-color: none;
+      }
+
+      .shopping-cart-section input:focus::-webkit-input-placeholder {
+          color: transparent;
+      }
+
+      .shopping-cart-section .btn {
+          background-color: #f90;
+          border-color: #f90;
+          color: white;
+          width: 100%;
+          font-size: 0.7rem;
+          margin-top: 4vh;
+          padding: 1vh;
+          border-radius: 0;
+      }
+
+      .shopping-cart-section .btn:focus {
+          box-shadow: none;
+          outline: none;
+          color: white;
+          -webkit-box-shadow: none;
+          -webkit-user-select: none;
+          transition: none;
+      }
+
+      .shopping-cart-section .btn:hover {
+          color: white;
+      }
+
+      .shopping-cart-section .card a {
+          color: black;
+      }
+
+      .shopping-cart-section .card a:hover {
+          color: black;
+          text-decoration: none;
+      }
+
+      .shopping-cart-section #code {
+          background-image: linear-gradient(to left, rgba(255, 255, 255, 0.253), rgba(255, 255, 255, 0.185)), url("https://img.icons8.com/small/16/000000/long-arrow-right.png");
+          background-repeat: no-repeat;
+          background-position-x: 95%;
+          background-position-y: center;
+      }
+
+      .quantity-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #000;
+      }
+
+      .quantity-btn:hover {
+          background-color: #f0f0f0;
+      }
+
+      #grad1 {
+          background-color: : #9C27B0;
+          background-image: linear-gradient(120deg, #FF4081, #81D4FA);
+      }
+
+      /*form styles*/
+      #msform {
+          text-align: center;
+          position: relative;
+          margin-top: 20px;
+      }
+
+      #msform fieldset .form-card {
+          background: white;
+          border: 0 none;
+          border-radius: 0px;
+          box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+          padding: 20px 40px 30px 40px;
+          box-sizing: border-box;
+          width: 94%;
+          margin: 0 3% 20px 3%;
+
+          /*stacking fieldsets above each other*/
+          position: relative;
+      }
+
+      #msform fieldset {
+          background: white;
+          border: 0 none;
+          border-radius: 0.5rem;
+          box-sizing: border-box;
+          width: 100%;
+          margin: 0;
+          padding-bottom: 20px;
+
+          /*stacking fieldsets above each other*/
+          position: relative;
+      }
+
+      /*Hide all except first fieldset*/
+      #msform fieldset:not(:first-of-type) {
+          display: none;
+      }
+
+      #msform fieldset .form-card {
+          text-align: left;
+          color: #9E9E9E;
+      }
+
+      #msform input, #msform textarea {
+          padding: 0px 8px 4px 8px;
+          border: none;
+          border-bottom: 1px solid #ccc;
+          border-radius: 0px;
+          margin-bottom: 25px;
+          margin-top: 2px;
+          width: 100%;
+          box-sizing: border-box;
+          font-family: montserrat;
+          color: #2C3E50;
+          font-size: 16px;
+          letter-spacing: 1px;
+      }
+
+      #msform input:focus, #msform textarea:focus {
+          -moz-box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+          border: none;
+          font-weight: bold;
+          border-bottom: 2px solid #f90;
+          outline-width: 0;
+      }
+
+      /*Blue Buttons*/
+      #msform .action-button {
+          width: 100px;
+          background: #f90;
+          font-weight: bold;
+          color: white;
+          border: 0 none;
+          border-radius: 0px;
+          cursor: pointer;
+          padding: 10px 5px;
+          margin: 10px 5px;
+      }
+
+      #msform .action-button:hover, #msform .action-button:focus {
+          box-shadow: 0 0 0 2px white, 0 0 0 3px #f90;
+      }
+
+      /*Previous Buttons*/
+      #msform .action-button-previous {
+          width: 100px;
+          background: #616161;
+          font-weight: bold;
+          color: white;
+          border: 0 none;
+          border-radius: 0px;
+          cursor: pointer;
+          padding: 10px 5px;
+          margin: 10px 5px;
+      }
+
+      #msform .action-button-previous:hover, #msform .action-button-previous:focus {
+          box-shadow: 0 0 0 2px white, 0 0 0 3px #616161;
+      }
+
+      /*Dropdown List Exp Date*/
+      select.list-dt {
+          border: none;
+          outline: 0;
+          border-bottom: 1px solid #ccc;
+          padding: 2px 5px 3px 5px;
+          margin: 2px;
+      }
+
+      select.list-dt:focus {
+          border-bottom: 2px solid #f90;
+      }
+
+      /*The background card*/
+      .card {
+          z-index: 0;
+          border: none;
+          border-radius: 0.5rem;
+          position: relative;
+      }
+
+      /*FieldSet headings*/
+      .fs-title {
+          font-size: 25px;
+          color: #2C3E50;
+          margin-bottom: 10px;
+          font-weight: bold;
+          text-align: left;
+      }
+
+      /*progressbar*/
+      #progressbar {
+          margin-bottom: 30px;
+          overflow: hidden;
+          color: lightgrey;
+      }
+
+      #progressbar .active {
+          color: #f90;
+      }
+
+      #progressbar li {
+          list-style-type: none;
+          font-size: 12px;
+          width: 50%;
+          float: left;
+          position: relative;
+      }
+
+      /*Icons in the ProgressBar*/
+      #progressbar #customize:before {
+          font-family: FontAwesome;
+          content: "1";
+      }
+
+      #progressbar #personal:before {
+          font-family: FontAwesome;
+          content: "2";
+      }
+
+      /*ProgressBar before any progress*/
+      #progressbar li:before {
+          width: 50px;
+          height: 50px;
+          line-height: 45px;
+          display: block;
+          font-size: 18px;
+          color: #ffffff;
+          background: lightgray;
+          border-radius: 50%;
+          margin: 0 auto 10px auto;
+          padding: 2px;
+      }
+
+      /*ProgressBar connectors*/
+      #progressbar li:after {
+          content: '';
+          width: 100%;
+          height: 2px;
+          background: lightgray;
+          position: absolute;
+          left: 0;
+          top: 25px;
+          z-index: -1;
+      }
+
+      /*Color number of the step and the connector before it*/
+      #progressbar li.active:before, #progressbar li.active:after {
+          background: #f90;
+      }
+
+      /*Imaged Radio Buttons*/
+      .radio-group {
+          position: relative;
+          margin-bottom: 25px;
+      }
+
+      .radio {
+          display: inline-block;
+          width: 204;
+          height: 104;
+          border-radius: 0;
+          background: lightblue;
+          box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+          box-sizing: border-box;
+          cursor: pointer;
+          margin: 8px 2px;
+      }
+
+      .radio:hover {
+          box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .radio.selected {
+          box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      /*Fit image in bootstrap div*/
+      .fit-image {
+          width: 100%;
+          object-fit: cover;
+      }
+
+      .msg-image,
+      .modal-image,
+      .card-image {
+          width: 100%;
+          height: auto;
+      }
+
+      .message-card, .card-img-top{
+          border: 1px solid #e9ecef;
+          padding: 1rem;
+          text-align: center;
+          cursor: pointer;
+      }
+
+      .message-card img {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+      }
+      .card-img-top img {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+      }
+
+      .delivery-time-buttons .btn {
+          margin-right: 5px;
+          background-color: #f90;
+          color: white;
+          border: none;
+      }
+
+    .swiper {
         width: 100%;
-        height: 2px;
-        background: lightgray;
-        position: absolute;
-        left: 0;
-        top: 25px;
-        z-index: -1;
+        height: 100%;
+      }
+
+    .my-swiper{
+      padding: 0 36px;
     }
 
-    /*Color number of the step and the connector before it*/
-    #progressbar li.active:before, #progressbar li.active:after {
-        background: #f90;
-    }
-
-    /*Imaged Radio Buttons*/
-    .radio-group {
-        position: relative;
-        margin-bottom: 25px;
-    }
-
-    .radio {
-        display: inline-block;
-        width: 204;
-        height: 104;
-        border-radius: 0;
-        background: lightblue;
-        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
-        box-sizing: border-box;
-        cursor: pointer;
-        margin: 8px 2px;
-    }
-
-    .radio:hover {
-        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .radio.selected {
-        box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    /*Fit image in bootstrap div*/
-    .fit-image {
-        width: 100%;
-        object-fit: cover;
-    }
-
-    .card-img,
-    .modal-image,
-    .card-image {
-        width: 100%;
-        height: auto;
-    }
-
-    .message-card, .card-img-top{
-        border: 1px solid #e9ecef;
-        padding: 1rem;
+      .swiper-slide {
         text-align: center;
-        cursor: pointer;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .swiper {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+
+    .swiper-slide .product-card{
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+      height: 300px;
     }
 
-    .message-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
-    .card-img-top img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
+   .swiper-slide .product-card img{
+     height: 230px;
+     width: 100%;
+     object-fit: cover;
+   }
 
-    .delivery-time-buttons .btn {
-        margin-right: 5px;
-        background-color: #f90;
-        color: white;
-        border: none;
+  /* Hide the radio button */
+  input[type="radio"] {
+    display: none; /* Completely hide the radio button */
+  }
+
+  /* Default product card styling */
+  .product-card {
+    background-color: #fff; /* White background by default */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+    padding: 15px;
+    text-align: center;
+    cursor: pointer; /* Add pointer cursor for interactivity */
+  }
+
+  /* Hover effect for the product card */
+  .product-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Darker shadow */
+    transform: translateY(-5px); /* Lift effect */
+  }
+
+  /* Apply orange background when the radio button is checked */
+  input[type="radio"]:checked + label .product-card {
+    background-color: orange; /* Orange background for the selected card */
+    color: #fff; /* White text for better contrast */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhance shadow for the selected card */
+    transform: translateY(-5px); /* Keep the lifted effect */
+  }
+
+  /* Image styling */
+  .product-card img {
+    max-width: 100%; /* Make image responsive */
+    border-radius: 8px; /* Rounded corners */
+    margin-bottom: 10px; /* Space between image and text */
+  }
+
+  /* Price text styling */
+  .product-card p {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333; /* Default dark color for price */
+    margin: 0;
+    transition: color 0.3s ease; /* Smooth color transition */
+  }
+
+  /* Change price text color when the card is selected */
+  input[type="radio"]:checked + label .product-card p {
+    color: #fff; /* Change to white when the card is checked */
+  }
+
+
+    .swiper-pagination{
+      position: relative;
     }
+    /* Swiper pagination bullets */
+  .swiper-pagination-bullet {
+    background-color: #ccc; /* Default bullet color */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Circular bullets */
+    opacity: 1; /* Make bullets fully visible */
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+  }
+
+  /* Active pagination bullet */
+  .swiper-pagination-bullet-active {
+    background-color: orange !important; /* Active bullet color */
+  }
+
+  /* Swiper navigation buttons */
+  .swiper-button-next, .swiper-button-prev {
+    /* background-color: #fff; /* White background for buttons */ */
+    /* border-radius: 50%; /* Circular buttons */ */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */ */
+    width: 16px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: orange; /* Button icon color */
+    font-size: 20px; /* Size of the arrow icons */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover effect */
+  }
+
+  /* Hover effect for navigation buttons */
+  .swiper-button-next:hover, .swiper-button-prev:hover {
+    /* background-color: orange; /* Change background on hover */ */
+    color: white; /* Change arrow color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+
+  /* Position the navigation buttons */
+  .swiper-button-next {
+    right: 10px; /* Adjust the position from the right */
+  }
+
+  .swiper-button-prev {
+    left: 10px; /* Adjust the position from the left */
+  }
+
+  /* Additional styles for Swiper container to ensure buttons are visible */
+  .swiper {
+    padding-bottom: 20px; /* Add space at the bottom for pagination */
+  }
+
+  .swiper-wrapper{
+    padding: 40px 24px;
+  }
 {% endstylesheet %}
 
 {% javascript %}
+$(document).ready(function () {
+  const baseUrl = 'https://api.haddaya.com';
+  loadZones();
 
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Fetch zones and populate the zone dropdown
-    fetchZones();
 
-    // Fetch the areas when a zone is selected
-    document.querySelector('select[name="zone"]').addEventListener('change', function() {
-        const selectedZoneId = this.value;
-        if (selectedZoneId) {
-            fetchAreas(selectedZoneId);
-        }
+  let selectedDate = new Date().toISOString().split('T')[0];
+  loadDeliverySlots(selectedDate);
+
+  $(document).on('change', 'input[name="delivery_time"][value="anotherTime"]', function () {
+    $('#deliveryModal').modal('show');
+    loadDeliverySlots(selectedDate);
+  });
+
+  $(document).on('change', 'input[name="delivery_date"]', function () {
+    const deliveryDateValue = $(this).val();
+    if (deliveryDateValue === 'today') {
+      selectedDate = new Date().toISOString().split('T')[0];
+    } else if (deliveryDateValue === 'tomorrow') {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      selectedDate = tomorrow.toISOString().split('T')[0];
+    }
+    loadDeliverySlots(selectedDate);
+  });
+
+  $(document).on('change', 'input[name="picked_date"]', function () {
+    selectedDate = $(this).val();
+    loadDeliverySlots(selectedDate);
+  });
+
+  function loadDeliverySlots(date) {
+    $.ajax({
+      url: `${baseUrl}/slotByDate/${date}`,
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        const slotContainer = $('.btn-group-toggle.delivery_time');
+        slotContainer.empty();
+
+        const currentTime = new Date();
+        const selectedDateObject = new Date(date);
+        const isToday = selectedDateObject.toDateString() === currentTime.toDateString();
+
+        data.data.forEach(slot => {
+          const slotClosingTime = new Date(`${date}T${slot.slotClosingTime}`);
+          const isDisabled = isToday && currentTime >= slotClosingTime;
+
+          const slotOption = `
+            <label class="btn btn-outline-primary delivery_time ${isDisabled ? 'disabled' : ''}" 
+                   style="background-color: ${isDisabled ? '#ccc' : '#f90'}; color: white; border: none;">
+              <input type="radio" name="delivery_time_modal" value="${slot.startTime} - ${slot.endTime}" 
+                     autocomplete="off" ${isDisabled ? 'disabled' : ''}>
+              ${slot.startTime} - ${slot.endTime}
+            </label>
+          `;
+          slotContainer.append(slotOption);
+        });
+      },
+      error: function (error) {
+        console.error('Error fetching delivery slots:', error);
+      }
     });
+  }
 
-    // Fetch Zones from the API
-    function fetchZones() {
-        const apiUrl = 'https://api.haddaya.com/zones/list';
-
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json(); // Parse the response as JSON
-            })
-            .then(data => {
-                let zoneSelect = document.querySelector('select[name="zone"]');
-                zoneSelect.innerHTML = '<option disabled selected>Select your Zone</option>'; // Reset the select options
-
-                // Iterate over the 'data' array and add each zone as an option
-                data.data.forEach(zone => {
-                    let option = document.createElement('option');
-                    option.value = zone.id; // Use the 'id' as the value of the option
-                    option.textContent = zone.name; // Use 'name' for display text
-                    zoneSelect.appendChild(option); // Append the option to the select
-                });
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+  $('input[name="delivery_date"]').change(function () {
+    if ($(this).val() === 'pickDate') {
+      $('#datePicker').show();
+    } else {
+      $('#datePicker').hide();
     }
+  });
 
-    // Fetch Areas based on the selected zone from the API
-    function fetchAreas(zoneId) {
-        const apiUrl = `https://api.haddaya.com/areas/list`;
-
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json(); // Parse the response as JSON
-            })
-            .then(data => {
-                let areaSelect = document.querySelector('select[name="area"]');
-                areaSelect.innerHTML = '<option disabled selected>Select your Area</option>'; // Reset the select options
-
-                // Filter areas based on the selected zoneId
-                data.data
-                    .filter(area => area.zoneId == zoneId) // Only show areas for the selected zone
-                    .forEach(area => {
-                        let option = document.createElement('option');
-                        option.value = area.id; // Use the 'id' as the value of the option
-                        option.textContent = area.name; // Use 'name' for display text
-                        areaSelect.appendChild(option); // Append the option to the select
-                    });
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-    }
+  $('#confirmDeliveryTime').on('click', function () {
+    $('#deliveryModal').modal('hide');
+  });
 });
 
 
 
-      document.addEventListener("DOMContentLoaded", function() {
-      var radioButtons = document.querySelectorAll('input[name="selectedProduct"]');
-  
-  radioButtons.forEach(function(radioButton) {
-    radioButton.addEventListener('change', function() {
-      if (this.checked) {
-        var label = this.nextElementSibling;
-        var imageElement = label.querySelector('img.modal-image');
-        
-        if (imageElement) {
-          var imageUrl = imageElement.src;
-          console.log("Selected Image URL:", imageUrl); 
-          var mainImageElement = document.querySelector('.card-img-top .card-image');
-          if (mainImageElement) {
-            mainImageElement.src = imageUrl;
-          }
-        }
-      }
-    });
+
+
+
+
+
+   $(document).on('change', 'select[name="zone"]', function () {
+    const selectedZoneId = $(this).val();
+    $('select[name="area"]').html('<option disabled selected>Select your Area</option>');
+    if (selectedZoneId) {
+      loadAreas(selectedZoneId);
+    }
   });
 
-  // Optionally, trigger the first radio button to set the default image on page load
-  if (radioButtons.length > 0) {
-    radioButtons[0].checked = true; // Check the first radio button
-    radioButtons[0].dispatchEvent(new Event('change')); // Trigger the change event
+
+  $(document).on('click', '.card-img-top, .message-card', function () {
+    const tab = $(this).data('tab');
+    $('#productModal').modal('show');
+    if (tab === 'message') $('#message-tab').tab('show');
+    else if (tab === 'product') $('#products-tab').tab('show');
+  });
+
+  let selectedImageUrl, customMessageContent = '', customLinkContent = '';
+
+  $(document).on('change', 'input[name="selectedProduct"]', function () {
+    if (this.checked) selectedImageUrl = $(this).next('label').find('img.modal-image').attr('src');
+  });
+
+  $('input[name="selectedProduct"]').first().prop('checked', true).trigger('change');
+
+  $(document).on('input', '#customMessage', function () { customMessageContent = $(this).val().trim(); });
+  $(document).on('input', '#customLink', function () { customLinkContent = $(this).val().trim(); });
+
+  function updateMessageAndLink() {
+    $('.message-content').html(customMessageContent ? `<strong>Your Message: </strong>${customMessageContent}` : '');
+    $('.url-content').html(customLinkContent ? `<strong>Your URL: </strong>${customLinkContent}` : '');
+    $('.message-wrapper').toggle(!!customMessageContent || !!customLinkContent);
   }
-        
-          function removeQuantityButtons() {
-              // Select all elements with the class 'qty_minus' and 'qty_plus'
-              const minusButtons = document.querySelectorAll('.qty_minus');
-              const plusButtons = document.querySelectorAll('.qty_plus');
-  
-              // Remove each of these elements from the DOM
-              minusButtons.forEach(button => button.remove());
-              plusButtons.forEach(button => button.remove());
-          }
-  
-          // Remove the buttons when the DOM is fully loaded
-          removeQuantityButtons();
-  
-          // If there are dynamic updates to the DOM, use MutationObserver to continuously remove buttons
-          const observer = new MutationObserver(removeQuantityButtons);
-          observer.observe(document.body, { childList: true, subtree: true });
-      });
-    
-      function decreaseQuantity(itemId) {
-          var input = document.getElementById('updates_' + itemId);
-          var value = parseInt(input.value);
-          if (value > 1) {
-              input.value = value - 1;
-          }
-      }
-  
-      function increaseQuantity(itemId) {
-          var input = document.getElementById('updates_' + itemId);
-          var value = parseInt(input.value);
-          input.value = value + 1;
-      }
-  
-      function showProductModal(tab) {
-          $('#productModal').modal('show');
-          if (tab === 'message') {
-              $('#message-tab').tab('show');
-              document.querySelector('.message-card img').src = "https://placehold.co/600x400?text=Your+Message&selected";
-          } else if (tab === 'product') {
-              $('#products-tab').tab('show');
-              document.querySelector('.card-img-top').src = "https://placehold.co/600x400?text=Choose+Card&selected";
-          }
-      }
 
-      function showPackingModal() {
-        $('#packingModal').modal('show');
-    }
+  function updateButtonText() {
+    const activeTab = $('.nav-tabs .nav-link.active').attr('id');
+    $('#saveAndContinue').text(activeTab === 'products-tab' ? 'Save and Continue' : 'Save');
+  }
 
-    $(document).on('click', '#show-packing', function() {
-      debugger;
-      showPackingModal();
-  });
+  $('.nav-tabs .nav-link').on('shown.bs.tab', updateButtonText);
+  updateButtonText();
+
+  function checkFormCompletion() {
+    const requiredFields = ['input[name="recipient_name"]', 'input[name="recipient_phone"]', 'select[name="zone"]', 'select[name="area"]'];
+    const allFilled = requiredFields.every(selector => $(selector).val() && $(selector).val().trim() !== '');
+    $('#checkoutButton').prop('disabled', !allFilled);
+  }
+
+  $(document).on('input change', 'input, select', checkFormCompletion);
+
+  function removeQuantityButtons() { $('.qty_minus, .qty_plus').remove(); }
+  removeQuantityButtons();
+  const observer = new MutationObserver(removeQuantityButtons);
+  observer.observe(document.body, { childList: true, subtree: true });
 
 
 
-  
-      $(document).ready(function() {
-
-
-         $('#deliveryModal').on('show.bs.modal', function() {
-        let selectedDate = $('input[name="delivery_date"]:checked').val();
-        handleDateChange(selectedDate);
+  function addToCart(variantId) {
+    $.post('/cart/add.js', { id: variantId, quantity: 1 }, function () {
+      $('#productModal').modal('hide');
+    }).fail(function (error) {
+      console.log('Error adding product to cart', error);
     });
+  }
 
-    // Fetch delivery slots when a date is selected
-    $('input[name="delivery_date"]').on('change', function() {
-        let selectedDate;
-
-        // Handle 'Pick a date' option by reading from the date input
-        if ($(this).val() === 'pickDate') {
-            selectedDate = $('input[name="picked_date"]').val();
-        } else if ($(this).val() === 'today') {
-            selectedDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
-        } else if ($(this).val() === 'tomorrow') {
-            let tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1); // Increment the date by 1
-            selectedDate = tomorrow.toISOString().split('T')[0];
-        }
-
-        // Call the function to fetch and display delivery slots
-        handleDateChange(selectedDate);
-    });
-
-    // Handle date changes for custom date input (Pick a date)
-    $('input[name="picked_date"]').on('change', function() {
-        let pickedDate = $(this).val();
-        if (pickedDate) {
-            handleDateChange(pickedDate);
-        }
-    });
-
-    // Function to handle date change and fetch delivery slots
-    function handleDateChange(date) {
-        if (!date) return;
-
-        // Fetch delivery slots for the selected date
-        const apiUrl = `https://api.haddaya.com/delivery-slot/list?date=${date}`;
-
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json(); // Parse the response as JSON
-            })
-            .then(data => {
-                const currentTime = new Date(); // Get the current time
-                const deliveryTimeContainer = $('.delivery-time-buttons'); // Container for delivery time buttons
-
-                // Clear the current delivery time slots
-                deliveryTimeContainer.empty();
-
-                // Iterate over the delivery slots and append them to the modal
-                data.data.forEach(slot => {
-                    if (slot.status === 'ACTIVE') {
-                        const startTime = new Date(`${slot.startDate}T${slot.startTime}`);
-                        const endTime = new Date(`${slot.endDate}T${slot.endTime}`);
-                        const thresholdTime = new Date(endTime.getTime() - slot.thresholdMinutes * 60000); // Apply threshold
-
-                        // Check if the current time is before the threshold time
-                        const isDisabled = currentTime >= thresholdTime;
-
-                        // Create the HTML for the delivery slot
-                        const slotHtml = `
-                            <label class="btn btn-outline-primary delivery_time ${isDisabled ? 'disabled' : ''}">
-                                <input type="radio" name="delivery_time_modal" value="${slot.startTime}-${slot.endTime}" autocomplete="off" ${isDisabled ? 'disabled' : ''}>
-                                ${slot.startTime} - ${slot.endTime}
-                            </label>
-                        `;
-
-                        // Append the slot to the container
-                        deliveryTimeContainer.append(slotHtml);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-    }
-
-    // Show date picker when "Pick a date" is selected
-    $('input[name="delivery_date"]').on('change', function() {
-        if ($(this).val() == 'pickDate') {
-            $('#datePicker').show(); // Show date picker input
-        } else {
-            $('#datePicker').hide(); // Hide date picker input
-        }
-    });
-
-
-
-
-        // Save packing selection
-    $('#savePackingSelection').click(function() {
-        var selectedPacking = $('input[name="selectedPacking"]:checked').val();
-        if (selectedPacking) {
-            savePackingSelection(selectedPacking);
-        } else {
-            alert("Please select a packing option.");
-        }
-    });
-
-    // Save the packing selection and update the cart
-    function savePackingSelection(packingId) {
-        $.ajax({
-            type: 'POST',
-            url: '/cart/update.js',
-            data: {
-                attributes: {
-                    'packing_id': packingId
-                }
-            },
-            dataType: 'json',
-            success: function() {
-                console.log('Packing selected:', packingId);
-                $('#packingModal').modal('hide');
-                updateSelectedPacking(packingId);
-            },
-            error: function(error) {
-                console.log('Error saving packing selection', error);
-            }
-        });
-    }
-
-    // Update the selected packing in the UI
-    function updateSelectedPacking(packingId) {
-        var packingLabel = $('label[for="packing-' + packingId + '"]');
-        var selectedPackingTitle = packingLabel.find('p').text();
-
-        $('.packing-wrapper').html('<strong>Packing Selected: </strong>' + selectedPackingTitle);
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      // Fetch the packing ID stored in cart attributes, ensure it is interpreted correctly in Liquid
-      var selectedPacking = "{{ cart.attributes.packing_id | default: '' }}";
-  
-      // Check if a packing ID exists
-      if (selectedPacking) {
-          // Select the radio button with the corresponding packing ID
-          $('#packing-' + selectedPacking).prop('checked', true);
-          updateSelectedPacking(selectedPacking);
-      }
-  });
-
-
-
-
-
-
-        fetchAreaData();
-          function fetchAreaData() {
-    const apiUrl = 'https://api.haddaya.com/areas/list';
-
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
-            }
-            return response.json(); // Parse the response as JSON
-        })
-        .then(data => {
-            let select = document.querySelector('select[name="area"]');
-            select.innerHTML = '<option disabled selected>Select your Area</option>'; // Reset the select options
-
-            // Iterate over the 'data' array and add each area as an option
-            data.data.forEach(item => {
-                let option = document.createElement('option');
-                option.value = item.id; // Use the 'id' as the value of the option
-                option.textContent = `${item.name} (${item.zone.name})`; // Use 'name' and 'zone' name for display text
-                select.appendChild(option); // Append the option to the select
-            });
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-        
-         $('.message-wrapper').hide();
-              function updateDeliveryTime() {
-              var selectedTime = $('input[name="delivery_time_modal"]:checked').val();
-              if (selectedTime) {
-                  $('.deliveryT').html('<strong>Delivery Time: </strong>' + selectedTime);
-              } else {
-                  $('.deliveryT').html('');
-              }
-            }
-
-      function updateDeliveryDate() {
-        var selectedDate = $('input[name="delivery_date"]:checked').val();
-        if (selectedDate) {
-          if(selectedDate=='pickDate'){
-            date = $('input[name="picked_date"]').val();
-            $('.deliveryDate').html('<strong>Delivery date: </strong>' + date);
-          }else{
-            $('.deliveryDate').html('<strong>Delivery date: </strong>' + selectedDate);
-          }
-        } else {
-            $('.deliveryDate').html('');
-        }
-      }
-          function updateContent() {
-              var message = $('#customMessage').val().trim();
-              var url = $('#customLink').val().trim();
-               if (message || url) {
-            if (message) {
-                $('.message-content').html('<strong>Your Message: </strong>' + message);
-                } else {
-                    $('.message-content').html('');
-                }
-                if (url) {
-                    $('.url-content').html('<strong>Your URL: </strong>' + url);
-                } else {
-                    $('.url-content').html('');
-                }
-                $('.message-wrapper').show();
-            } else {
-                $('.message-wrapper').hide();
-            }
-          }
-        
-
-              
-          function addToCart(variantId) {
-              $.ajax({
-                  type: 'POST',
-                  url: '/cart/add.js',
-                  data: {
-                      id: variantId,
-                      quantity: 1
-                  },
-                  dataType: 'json',
-                  success: function() {
-                      console.log('Product added to cart');
-                     $('#productModal').modal('hide');
-                  },
-                  error: function(error) {
-                      console.log('Error adding product to cart', error);
-                  }
-              });
-          }
-  
-          function saveDeliveryDetailsAndRedirect() {
-              var recipientName = $('input[name="recipient_name"]').val();
-              var recipientPhone = $('input[name="recipient_phone"]').val();
-              var askAddress = $('input[name="ask_address"]').is(':checked');
-              var recipientAddress = $('input[name="recipient_address"]').val();
-              var zone = $('select[name="zone"] option:selected').val();
-              var area = $('select[name="area"] option:selected').val();
-              var keepIdentitySecret = $('input[name="keep_identity_secret"]').is(':checked');
-              var deliveryTime = $('input[name="delivery_time"]:checked').val();
-              var pickedDate = $('input[name="picked_date"]').val();
-              var deliveryTimeModal = $('input[name="delivery_time_modal"]:checked').val();
-  
-              if (deliveryTime === "anotherTime") {
-                  deliveryTime = `${pickedDate} ${deliveryTimeModal}`;
-              }
-  
-              var attributes = {
-                  'Recipient Name': recipientName,
-                  'Recipient Phone': recipientPhone,
-                  'Ask Address': askAddress ? 'Yes' : 'No',
-                  'Keep Identity Secret': keepIdentitySecret ? 'Yes' : 'No',
-                  'Delivery Time': deliveryTime,
-                  'Delivery Status': askAddress ? 'Pending for Address Update' : 'Pending'
-
-              };
-           
-  
-              if (!askAddress) {
-                  attributes['Recipient Address'] = recipientAddress;
-                 attributes['zone'] = zone;
-                 attributes['area'] = area;
-              }
-  
-              $.ajax({
-                  type: 'POST',
-                  url: '/cart/update.js',
-                  data: {
-                      attributes: attributes
-                  },
-                  dataType: 'json',
-                  success: function() {
-                      window.location.href = '/checkout';
-                  },
-                  error: function(error) {
-                      console.log('Error saving delivery details', error);
-                  }
-              });
-          }
-  function saveProductMessage() {
-    var selectedProduct = $('input[name="selectedProduct"]:checked').val();
-    var customMessage = $('#customMessage').val();
-    var customLink = $('#customLink').val();
-
-    var properties = {
-        'Message': customMessage,
-        'Link': customLink
+  function saveDeliveryDetailsAndRedirect() {
+    const attributes = {
+      'Zone Name': $('select[name="zone"] option:selected').text(),
+      'Area Name': $('select[name="area"] option:selected').text(),
+      'Delivery Slot ID': $('input[name="delivery_slot_id"]').val(),
+      'Delivery Slot Name': $('input[name="delivery_slot_name"]').val(),
+      'Recipient Phone': $('input[name="recipient_phone"]').val(),
+      'Recipient Name': $('input[name="recipient_name"]').val(),
+      'Recipient Address': $('input[name="recipient_address"]').val(),
+      'Delivery Time': $('input[name="delivery_time"]:checked').val() === "anotherTime"
+        ? `${$('input[name="picked_date"]').val()} ${$('input[name="delivery_time_modal"]:checked').val()}`
+        : $('input[name="delivery_time"]:checked').val(),
+      'Delivery Status': $('input[name="ask_address"]').is(':checked') ? 'Pending for Address Update' : 'Pending',
+      'Message': customMessageContent,
+      'Message URL': customLinkContent,
+      'Keep Identity Secret': $('input[name="keep_identity_secret"]').is(':checked') ? 'Yes' : 'No'
     };
 
-    if (selectedProduct) {
-        addToCart(selectedProduct);
+    if (!$('input[name="ask_address"]').is(':checked')) {
+      attributes['Recipient Address'] = $('input[name="recipient_address"]').val();
+      attributes['Zone Name'] = $('select[name="zone"]').val();
+      attributes['Area Name'] = $('select[name="area"]').val();
     }
 
-    $.ajax({
-        type: 'POST',
-        url: '/cart/update.js',
-        data: {
-            attributes: properties
-        },
-        dataType: 'json',
-        success: function() {
-            $('#productModal').modal('hide');
-        },
-        error: function(error) {
-            console.log('Error saving product message', error);
-        }
+    $.post('/cart/update.js', { attributes: attributes }, function () {
+      window.location.href = '/checkout';
+    }).fail(function (error) {
+      console.log('Error saving delivery details', error);
     });
-}
-         
-  $('input[name="delivery_time"]').on('change', function() {
-    if ($(this).val() === 'fastest' && $(this).is(':checked')) {
-        $('.deliveryT').html(''); 
-       $('.deliveryDate').html('');
+  }
+
+  function saveProductMessage() {
+    const selectedProduct = $('input[name="selectedProduct"]:checked').val();
+    const properties = {
+      'Message': customMessageContent,
+      'Link': customLinkContent
+    };
+    if (selectedProduct) addToCart(selectedProduct);
+
+    $.post('/cart/update.js', { attributes: properties }, function () {
+      $('#productModal').modal('hide');
+    }).fail(function (error) {
+      console.log('Error saving product message', error);
+    });
+  }
+
+  $(document).on('click', '#saveAndContinue', function (e) {
+    e.preventDefault();
+    const activeTab = $('.nav-tabs .nav-link.active').attr('id');
+    
+    if (activeTab === 'products-tab') {
+      // Move to the "Message" tab
+      $('#message-tab').tab('show');
+    } else if (activeTab === 'message-tab') {
+      // If already on the "Message" tab, close the modal
+      $('#productModal').modal('hide');
     }
+    
+    if (selectedImageUrl) $('.card-image').attr('src', selectedImageUrl);
+    updateMessageAndLink();
+  });
+
+  $(document).on('click', '#customizeNextStep', function () {
+    const currentFieldset = $("#msform fieldset:visible");
+    const nextFieldset = currentFieldset.next();
+
+    $("#progressbar li").eq($("fieldset").index(nextFieldset)).addClass("active");
+
+    currentFieldset.animate({ opacity: 0 }, {
+      step: function (now) {
+        currentFieldset.css({ display: 'none', position: 'relative' });
+        nextFieldset.css({ opacity: 1 - now }).show();
+      },
+      duration: 600
+    });
+  });
+
+  $(document).on('click', '.previous', function () {
+    const currentFieldset = $("#msform fieldset:visible");
+    const prevFieldset = currentFieldset.prev();
+
+    $("#progressbar li").eq($("fieldset").index(currentFieldset)).removeClass("active");
+
+    currentFieldset.animate({ opacity: 0 }, {
+      step: function (now) {
+        currentFieldset.css({ display: 'none', position: 'relative' });
+        prevFieldset.css({ opacity: 1 - now }).show();
+      },
+      duration: 600
+    });
+  });
+
+  $(document).on('click', '#deliveryNextStep', saveDeliveryDetailsAndRedirect);
+
+  function loadZones() {
+    $.ajax({
+      url: `${baseUrl}/zones/list`,
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        let zoneSelect = $('select[name="zone"]');
+        zoneSelect.html('<option disabled selected>Select your Zone</option>');
+        data.data.forEach(zone => {
+          zoneSelect.append(`<option value="${zone.id}">${zone.name}</option>`);
+        });
+      },
+      error: function (error) {
+        console.error('Error fetching zones:', error);
+      }
+    });
+  }
+
+  // Function to load areas based on selected zone
+  function loadAreas(zoneId) {
+    $.ajax({
+      url: `${baseUrl}/areas/list?zoneId=${zoneId}`,
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        let areaSelect = $('select[name="area"]');
+        areaSelect.html('<option disabled selected>Select your Area</option>');
+        data.data.forEach(area => {
+          areaSelect.append(`<option value="${area.id}">${area.name}</option>`);
+        });
+      },
+      error: function (error) {
+        console.error('Error fetching areas:', error);
+      }
+    });
+  }
+
 });
-          $('#saveAndContinue').click(function() {
-                event.preventDefault();
-                 updateContent();  
-                saveProductMessage();
-          });
-  
-          $('.card-img-top').click(function() {
-              showProductModal('product');
-          });
-  
-          $('.message-card').click(function() {
-              showProductModal('message');
-          });
-  
-          $('#chooseProduct').click(function() {
-              var selectedProduct = $('input[name="selectedProduct"]:checked').val();
-              if (selectedProduct) {
-                  addToCart(selectedProduct);
-                  $('#productModal').modal('hide');
-              } else {
-                  alert('Please select a product');
-              }
-          });
-  
-          // Add event listener for the "Next Step" button on delivery tab
-          $('#deliveryNextStep').click(function() {
-              saveDeliveryDetailsAndRedirect();
-          });
-  
-          // Add event listener for the "Next Step" button on customize tab
-          $('#customizeNextStep').click(function() {
-              current_fs = $(this).closest('fieldset');
-              next_fs = current_fs.next();
-  
-              // Add Class Active
-              $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-  
-              // Show the next fieldset
-              next_fs.show();
-              // Hide the current fieldset with style
-              current_fs.animate({opacity: 0}, {
-                  step: function(now) {
-                      opacity = 1 - now;
-                      current_fs.css({
-                          'display': 'none',
-                          'position': 'relative'
-                      });
-                      next_fs.css({'opacity': opacity});
-                  },
-                  duration: 600
-              });
-          });
-  
-          // Show delivery details when "Continue to Delivery" is clicked
-          function showDeliveryDetails() {
-              current_fs = $("#msform fieldset:visible");
-              next_fs = current_fs.next();
-  
-              // Add Class Active
-              $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-  
-              // Show the next fieldset
-              next_fs.show();
-              // Hide the current fieldset with style
-              current_fs.animate({opacity: 0}, {
-                  step: function(now) {
-                      opacity = 1 - now;
-                      current_fs.css({
-                          'display': 'none',
-                          'position': 'relative'
-                      });
-                      next_fs.css({'opacity': opacity});
-                  },
-                  duration: 600
-              });
-          }
-  
-          // Add event listener for the "Continue to Delivery" button
-          $('.wc-proceed-to-checkout .next').click(function() {
-              showDeliveryDetails();
-          });
-  
-          $(document).on('click', 'input[name="previous"]', function() {
-              current_fs = $(this).closest('fieldset');
-              previous_fs = current_fs.prev();
-  
-              // Remove Class Active
-              $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-  
-              // Show the previous fieldset
-              previous_fs.show();
-              // Hide the current fieldset with style
-              current_fs.animate({opacity: 0}, {
-                  step: function(now) {
-                      opacity = 1 - now;
-                      current_fs.css({
-                          'display': 'none',
-                          'position': 'relative'
-                      });
-                      previous_fs.css({'opacity': opacity});
-                  },
-                  duration: 600
-              });
-          });
-  
-          window.onpopstate = function() {
-              if (current_fs.index() > 0) {
-                  $(current_fs).find(".previous").click();
-              }
-          };
-  
-          $('#askAddress').change(function() {
-              if ($(this).is(':checked')) {
-                  $('#addressInfo').show();
-                  $('#recipientAddress').hide();
-                  $('#area').hide();
-                  $('#zone').hide();
-                
-              } else {
-                  $('#addressInfo').hide();
-                  $('#recipientAddress').show();
-                 $('#area').show();
-                  $('#zone').show();
-              }
-          });
-  
-          $('input[name="delivery_date"]').change(function() {
-              if ($(this).val() == 'pickDate') {
-                  $('#datePicker').show();
-              } else {
-                  $('#datePicker').hide();
-              }
-          });
-  
-          $('#confirmDeliveryTime').click(function() {
-              updateDeliveryDate(); 
-              updateDeliveryTime();
-              $('#deliveryModal').modal('hide');
-          });
-      });
 {% endjavascript %}

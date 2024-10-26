@@ -2,7 +2,7 @@ import apiService from './apiService';
 import { IOrder } from '../interfaces/Order';
 import { IPagedResult } from '../interfaces/IPagedResult';
 
-interface IOrderSearchParams {
+export interface IOrderSearchParams {
   page?: number;
   limit?: number;
   shopifyOrderId?: string;
@@ -11,6 +11,8 @@ interface IOrderSearchParams {
   recipientPhone?: string;
   area?: string;
   senderName?: string;
+  slot?: string;
+  status?: string;
 }
 
 

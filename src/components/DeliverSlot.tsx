@@ -8,40 +8,90 @@ import {
   deleteDeliverySlot,
 } from '../services/deliverySlotService';
 import { IDeliverySlot, IDeliverySlotStatus } from '../interfaces/DeliverSlot';
-import { RiAddLine, RiCheckLine, RiDeleteBin2Line, RiEdit2Fill, RiPulseLine } from '@remixicon/react';
+import { RiAddLine, RiCheckLine, RiDeleteBin2Line, RiEdit2Fill } from '@remixicon/react';
 import { Button, Card, Container, Table } from 'react-bootstrap';
+
+const convertToTimeInputFormat = (time: string): string => {
+  const [timeString, modifier] = time.split(' ');
+  let [hours, minutes] = timeString.split(':');
+
+  if (modifier === 'PM' && hours !== '12') {
+    hours = String(parseInt(hours) + 12);
+  }
+  if (modifier === 'AM' && hours === '12') {
+    hours = '00';
+  }
+
+  return `${hours.padStart(2, '0')}:${minutes}`;
+};
+
+const convertToAPITimeFormat = (time: string): string => {
+  let [hours, minutes] = time.split(':');
+  const suffix = parseInt(hours) >= 12 ? 'PM' : 'AM';
+
+  hours = (parseInt(hours) % 12 || 12).toString();
+
+  return `${hours.padStart(2, '0')}:${minutes} ${suffix}`;
+};
 
 const DeliverySlot: React.FC = () => {
   const [deliverySlots, setDeliverySlots] = useState<IDeliverySlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<IDeliverySlot | null>(null);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]); // Track selected days
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchDeliverySlots();
   }, []);
 
   const fetchDeliverySlots = async () => {
-    const result = await getDeliverySlots(1, 10);
-    setDeliverySlots(result.data);
+    if (loading) return;
+    setLoading(true);
+    try {
+      const result = await getDeliverySlots(1, 10);
+      setDeliverySlots(result.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectSlot = async (id: number) => {
-    const slot = await getDeliverySlotById(id);
-    setSelectedSlot(slot);
-    setSelectedDays(slot?.availableDays || []); // Set selected days from slot
-    openModal();
+    try {
+      const slot = await getDeliverySlotById(id);
+      setSelectedSlot({
+        ...slot,
+        startTime: convertToTimeInputFormat(slot.startTime),
+        endTime: convertToTimeInputFormat(slot.endTime)
+      });
+      setSelectedDays(slot?.availableDays || []);
+      openModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleCreateOrUpdate = async () => {
-    if (selectedSlot?.id) {
-      await updateDeliverySlot(selectedSlot.id, { ...selectedSlot, availableDays: selectedDays });
-    } else {
-      await createDeliverySlot({ ...selectedSlot, availableDays: selectedDays });
+    if (selectedSlot) {
+      const slotData = {
+        ...selectedSlot,
+        startTime: convertToAPITimeFormat(selectedSlot.startTime),
+        endTime: convertToAPITimeFormat(selectedSlot.endTime),
+        createdAt: undefined,
+        updatedAt: undefined
+      };
+
+      if (selectedSlot.id) {
+        await updateDeliverySlot(selectedSlot.id, { ...slotData, availableDays: selectedDays });
+      } else {
+        await createDeliverySlot({ ...slotData, availableDays: selectedDays });
+      }
+      fetchDeliverySlots();
+      setSelectedSlot(null);
+      setSelectedDays([]);
+      closeModal();
     }
-    fetchDeliverySlots();
-    setSelectedSlot(null);
-    setSelectedDays([]);
-    closeModal();
   };
 
   const handleDelete = async (id: number) => {
@@ -51,18 +101,20 @@ const DeliverySlot: React.FC = () => {
 
   const handleCreateNew = () => {
     setSelectedSlot({
+      deliverySlotName: '',
+      deliveryCharges: 0,
       startDate: '',
       endDate: '',
       startDelivery: '',
       endDelivery: '',
       startTime: '',
       endTime: '',
-      priority: '',
-      charges: '',
-      thresholdMinutes: 0,
+      capacity: 0,
+      priority: 1,
       status: IDeliverySlotStatus.Active,
+      availableDays: []
     });
-    setSelectedDays([]); // Reset selected days
+    setSelectedDays([]);
     openModal();
   };
 
@@ -70,8 +122,6 @@ const DeliverySlot: React.FC = () => {
     setSelectedDays((prevDays) =>
       prevDays.includes(day) ? prevDays.filter((d) => d !== day) : [...prevDays, day]
     );
-
-    console.log('days : ', selectedDays);
   };
 
   const openModal = () => {
@@ -93,286 +143,180 @@ const DeliverySlot: React.FC = () => {
   };
 
   const dayNames: { [key: string]: string } = {
-    Mon: 'Monday',
-    Tue: 'Tuesday',
-    Wed: 'Wednesday',
-    Thu: 'Thursday',
-    Fri: 'Friday',
-    Sat: 'Saturday',
-    Sun: 'Sunday',
+    Monday: 'Monday',
+    Tuesday: 'Tuesday',
+    Wednesday: 'Wednesday',
+    Thursday: 'Thursday',
+    Friday: 'Friday',
+    Saturday: 'Saturday',
+    Sunday: 'Sunday',
   };
 
-  const daysOfWeek = Object.keys(dayNames); // Array of day keys
+  const daysOfWeek = Object.keys(dayNames);
 
   return (
-    <div className="container mt-4">
-
+    <Container className="mt-4">
       <Card className='mb-2' border='0'>
         <Card.Body>
-          <Button className=" mb-3" style={{ padding: '10px 16px', border: 0 }} onClick={handleCreateNew}>
-            <RiAddLine color='white' />
-            Add Delivery Slot
+          <Button className="mb-3" onClick={handleCreateNew}>
+            <RiAddLine color='white' /> Add Delivery Slot
           </Button>
         </Card.Body>
       </Card>
 
-      <div className="card custom-table">
-        <div className="card-header">
+      <Card className="custom-table">
+        <Card.Header>
           <h2>Delivery Slots</h2>
-        </div>
-        <div className="card-body">
+        </Card.Header>
+        <Card.Body>
           <div className="table-responsive">
             <Table striped responsive="sm">
               <thead>
                 <tr>
-                  <th style={{ minWidth: '120px' }}>Actions</th>
-                  <th style={{ minWidth: '150px' }}>Time (From - To)</th>
-                  <th style={{ minWidth: '120px' }}>Max Orders</th>
-                  <th style={{ minWidth: '250px' }}>Accept Orders (From - To)</th>
-                  <th style={{ minWidth: '150px' }}>Delivery Charges</th>
-                  <th style={{ minWidth: '100px' }}>Type</th>
-                  <th style={{ minWidth: '100px' }}>Status</th>
-                  <th style={{ minWidth: '50px' }}>Mon</th>
-                  <th style={{ minWidth: '50px' }}>Tue</th>
-                  <th style={{ minWidth: '50px' }}>Wed</th>
-                  <th style={{ minWidth: '50px' }}>Thu</th>
-                  <th style={{ minWidth: '50px' }}>Fri</th>
-                  <th style={{ minWidth: '50px' }}>Sat</th>
-                  <th style={{ minWidth: '50px' }}>Sun</th>
+                  <th>Actions</th>
+                  <th>Slot Name</th>
+                  <th>Delivery Charges</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Capacity</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  {daysOfWeek.map(day => <th key={day}>{dayNames[day]}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {deliverySlots.map((slot) => (
                   <tr key={slot.id}>
                     <td>
-                      <div className="d-flex">
-                        <button
-                          className="btn btn-sm mr-2"
-                          onClick={() => handleSelectSlot(slot.id!)}
-                        >
-                          <RiEdit2Fill />
-                        </button>
-                        <button
-                          className="btn btn-sm"
-                          onClick={() => handleDelete(slot.id!)}
-                        >
-                          <RiDeleteBin2Line color="red" />
-                        </button>
-                      </div>
+                      <Button size="sm" onClick={() => handleSelectSlot(slot.id!)}><RiEdit2Fill /></Button>
+                      <Button size="sm" onClick={() => handleDelete(slot.id!)}><RiDeleteBin2Line color="red" /></Button>
                     </td>
+                    <td>{slot.deliverySlotName}</td>
+                    <td>{slot.deliveryCharges}</td>
                     <td>{slot.startDate}</td>
                     <td>{slot.endDate}</td>
                     <td>{slot.startTime}</td>
                     <td>{slot.endTime}</td>
-                    <td>{slot.thresholdMinutes}</td>
-                    <td>{slot.status === IDeliverySlotStatus.Active ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Mon") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Tue") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Wed") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Thu") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Fri") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Sat") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
-                    <td>{slot.availableDays?.includes("Sun") ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}</td>
+                    <td>{slot.capacity}</td>
+                    <td>{slot.priority}</td>
+                    <td>{slot.status === IDeliverySlotStatus.Active ? 'Active' : 'Inactive'}</td>
+                    {daysOfWeek.map(day => (
+                      <td key={day}>
+                        {slot.availableDays?.includes(dayNames[day]) ? <RiCheckLine color="black" /> : <RiCheckLine color="#00000015" />}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </Table>
           </div>
-        </div>
+        </Card.Body>
+      </Card>
 
-      </div>
-      {/* Bootstrap Modal */}
-      <div
-        className="modal fade"
-        id="deliverySlotModal"
-        tabIndex={-1}
-        aria-labelledby="deliverySlotModalLabel"
-        aria-hidden="true"
-      >
+      <div className="modal fade" id="deliverySlotModal" tabIndex={-1} aria-labelledby="deliverySlotModalLabel" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="deliverySlotModalLabel">
-                {selectedSlot?.id ? 'Edit' : 'Create'} Delivery Slot
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <h5 className="modal-title" id="deliverySlotModalLabel">{selectedSlot?.id ? 'Edit' : 'Create'} Delivery Slot</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div className="modal-body modal-body-scrollable">
-              <div className="form-group mt-4">
-                <b>Slot Name</b>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Slot Name</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Slot Name"
-                  value={selectedSlot?.slotName || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, slotName: e.target.value })
-                  }
+                  value={selectedSlot?.deliverySlotName || ''}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, deliverySlotName: e.target.value })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>Delivery Charges</b>
+              <div className="form-group">
+                <label>Delivery Charges</label>
                 <input
                   type="number"
                   className="form-control"
-                  placeholder="Delivery Charges"
-                  value={selectedSlot?.charges || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, charges: e.target.value })
-                  }
+                  value={selectedSlot?.deliveryCharges || 0}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, deliveryCharges: parseFloat(e.target.value) })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>Start Date</b>
+              <div className="form-group">
+                <label>Start Date</label>
                 <input
                   type="date"
                   className="form-control"
-                  placeholder="Start Date"
                   value={selectedSlot?.startDate || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, startDate: e.target.value })
-                  }
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, startDate: e.target.value })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>End Date</b>
+              <div className="form-group">
+                <label>End Date</label>
                 <input
                   type="date"
                   className="form-control"
-                  placeholder="End Date"
                   value={selectedSlot?.endDate || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, endDate: e.target.value })
-                  }
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, endDate: e.target.value })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>Start Delivery</b>
-                <input
-                  type="date"
-                  className="form-control"
-                  placeholder="Start Delivery"
-                  value={selectedSlot?.startDelivery || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, startDelivery: e.target.value })
-                  }
-                />
-              </div>
-              <div className="form-group mt-4">
-                <b>End Delivery</b>
-                <input
-                  type="date"
-                  className="form-control"
-                  placeholder="End Delivery"
-                  value={selectedSlot?.endDelivery || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, endDelivery: e.target.value })
-                  }
-                />
-              </div>
-              <div className="form-group mt-4">
-                <b>Start Time</b>
+              <div className="form-group">
+                <label>Start Time</label>
                 <input
                   type="time"
                   className="form-control"
-                  placeholder="Start Time"
                   value={selectedSlot?.startTime || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, startTime: e.target.value })
-                  }
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, startTime: e.target.value })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>End Time</b>
+              <div className="form-group">
+                <label>End Time</label>
                 <input
                   type="time"
                   className="form-control"
-                  placeholder="End Time"
                   value={selectedSlot?.endTime || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, endTime: e.target.value })
-                  }
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, endTime: e.target.value })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>Capacity</b>
+              <div className="form-group">
+                <label>Capacity</label>
                 <input
                   type="number"
                   className="form-control"
-                  placeholder="Capacity"
-                  value={selectedSlot?.thresholdMinutes || 0}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, thresholdMinutes: parseInt(e.target.value) })
-                  }
+                  value={selectedSlot?.capacity || 0}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, capacity: parseInt(e.target.value) })}
                 />
               </div>
-              <div className="form-group mt-4">
-                <b>Priority</b>
+              <div className="form-group">
+                <label>Priority</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
-                  placeholder="Priority"
-                  value={selectedSlot?.priority || ''}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, priority: e.target.value })
-                  }
+                  value={selectedSlot?.priority || 1}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, priority: parseInt(e.target.value) })}
                 />
               </div>
-              {/* <div className="form-group mt-4">
-                <b>Status</b>
+              <div className="form-group">
+                <label>Status</label>
                 <select
                   className="form-control"
                   value={selectedSlot?.status || IDeliverySlotStatus.Active}
-                  onChange={(e) =>
-                    setSelectedSlot({ ...selectedSlot!, status: e.target.value as IDeliverySlotStatus })
-                  }
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, status: e.target.value as IDeliverySlotStatus })}
                 >
                   <option value={IDeliverySlotStatus.Active}>Active</option>
                   <option value={IDeliverySlotStatus.Inactive}>Inactive</option>
                 </select>
-              </div> */}
-              <div className="form-group mt-4">
-                {/* <b>Status</b> */}
-                <div className="form-check form-switch d-flex justify-content-between">
-                  <label className="form-check-label" htmlFor="statusToggle">
-                    {/* {selectedSlot?.status === IDeliverySlotStatus.Active ? 'Active' : 'Inactive'} */}
-                    <b>Status</b>
-                  </label>
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="statusToggle"
-                    checked={selectedSlot?.status === IDeliverySlotStatus.Active}
-                    onChange={(e) =>
-                      setSelectedSlot({
-                        ...selectedSlot!,
-                        status: e.target.checked ? IDeliverySlotStatus.Active : IDeliverySlotStatus.Inactive,
-                      })
-                    }
-                  />
-
-                </div>
               </div>
-
-              <div className="form-group mt-4 days-form">
-                <b><b>Available Days </b></b>
-                <div className="form-check " >
+              <div className="form-group mt-4">
+                <b>Available Days</b>
+                <div>
                   {daysOfWeek.map((day) => (
                     <div className="form-check form-switch d-flex justify-content-between" key={day}>
-                      <label className="form-check-label" htmlFor={day}>
-                        {dayNames[day]}
-                      </label>
+                      <label className="form-check-label">{dayNames[day]}</label>
                       <input
-                        className="form-check-input"
                         type="checkbox"
-                        id={day}
-                        checked={selectedDays.includes(day)}
-                        onChange={() => handleDayChange(day)}
+                        className="form-check-input"
+                        checked={selectedDays.includes(dayNames[day])}
+                        onChange={() => handleDayChange(dayNames[day])}
                       />
                     </div>
                   ))}
@@ -380,17 +324,13 @@ const DeliverySlot: React.FC = () => {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                Close
-              </button>
-              <button type="button" className="btn btn-success" onClick={handleCreateOrUpdate}>
-                {selectedSlot?.id ? 'Update' : 'Create'}
-              </button>
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary" onClick={handleCreateOrUpdate}>{selectedSlot?.id ? 'Update' : 'Create'}</button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
