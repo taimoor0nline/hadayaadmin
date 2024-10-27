@@ -11,8 +11,10 @@ export interface IOrderSearchParams {
   recipientPhone?: string;
   area?: string;
   senderName?: string;
-  deliverySlotId?: string;  
+  deliverySlotId?: string;
   status?: string;
+  sortField?: string; 
+  sortOrder?: 'asc' | 'desc'; 
 }
 
 export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPagedResult<IOrder>> => {

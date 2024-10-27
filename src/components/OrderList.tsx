@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { IMappedOrder } from '../interfaces/Order';
 import { useSearchParams } from 'react-router-dom';
-import { getOrders } from '../services/orderService';
+import { getOrders, IOrderSearchParams } from '../services/orderService';
 import { getPackingSlipBySlotId } from '../services/packingSlipService';
 import { IOrderPackingSlipResponse, IPackingSlipOrder } from '../interfaces/IOrderPackingSlip';
 
@@ -26,19 +26,18 @@ const OrderList: React.FC = () => {
   }, [currentPage, deliverySlotId, status, sortField, sortOrder]);
 
   const fetchOrders = async () => {
+    const params: IOrderSearchParams = {
+      page: currentPage,
+      limit: 10,
+      deliverySlotId: deliverySlotId || undefined,
+      status: status || undefined,
+      [searchField]: searchValue,
+      sortField: sortField || undefined,
+      sortOrder,
+    };
+
     try {
-      const params = {
-        page: currentPage,
-        limit: 10,
-        deliverySlotId: deliverySlotId || undefined,
-        status: status || undefined,
-        [searchField]: searchValue,
-        sortField,
-        sortOrder,
-      };
-
       const result = await getOrders(params);
-
       const mappedOrders: IMappedOrder[] = result.data.map((order: any) => ({
         shopifyOrderId: order.shopifyOrderId || 'N/A',
         orderNumber: order.orderNumber || 0,
@@ -68,13 +67,18 @@ const OrderList: React.FC = () => {
     setSortOrder(newOrder);
   };
 
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchOrders();
+  };
+
   const handlePrintPackingSlip = async () => {
     if (!deliverySlotId) return alert('Please select a slot to print packing slips.');
-  
+
     try {
       const response: IOrderPackingSlipResponse = await getPackingSlipBySlotId(deliverySlotId);
       const packingSlips = response.orders;
-  
+
       const packingSlipWindow = window.open('', 'PRINT', 'width=800,height=600');
       if (packingSlipWindow) {
         packingSlipWindow.document.write(`
@@ -103,7 +107,7 @@ const OrderList: React.FC = () => {
             </head>
             <body>
         `);
-  
+
         packingSlips.forEach((order: IPackingSlipOrder) => {
           packingSlipWindow.document.write(`
             <div class="packing-slip-page">
@@ -129,18 +133,18 @@ const OrderList: React.FC = () => {
             </div>
           `);
         });
-  
+
         packingSlipWindow.document.write(`
             </body>
           </html>
         `);
-  
+
         packingSlipWindow.document.close();
-  
+
         setTimeout(() => {
           packingSlipWindow.print();
           packingSlipWindow.close();
-        }, 500); 
+        }, 500);
       }
     } catch (error) {
       console.error('Error fetching packing slips:', error);
@@ -163,22 +167,104 @@ const OrderList: React.FC = () => {
               </button>
             </div>
             <div className="card-body">
-              {/* Other fields and search options */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <select className="form-control" value={searchField} onChange={(e) => setSearchField(e.target.value)}>
+                    <option value="zone">Zone</option>
+                    <option value="area">Area</option>
+                    <option value="senderPhone">Sender Phone</option>
+                    <option value="senderEmail">Sender Email</option>
+                    <option value="recipientPhone">Receiver Phone</option>
+                    <option value="orderNumber">Order Number</option>
+                  </select>
+                </div>
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder={`Enter ${searchField}`}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <button className="btn btn-primary" onClick={handleSearch}>
+                    Search
+                  </button>
+                </div>
+              </div>
+
               <table className="table table-striped">
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th onClick={() => handleSort('orderNumber')}>Order Number</th>
-                    <th onClick={() => handleSort('deliverySlotName')}>Delivery Slot</th>
-                    <th onClick={() => handleSort('isExpressDelivery')}>Express Delivery</th>
-                    <th onClick={() => handleSort('isAddressNeededFromRcvr')}>Receiver Address</th>
-                    <th onClick={() => handleSort('isAddressUpdatedByRcvr')}>Address Updated by Receiver</th>
-                    <th onClick={() => handleSort('zoneName')}>Zone</th>
-                    <th onClick={() => handleSort('areaName')}>Area</th>
-                    <th onClick={() => handleSort('senderName')}>Sender Name</th>
-                    <th onClick={() => handleSort('senderPhone')}>Sender Phone</th>
-                    <th onClick={() => handleSort('recipientPhone')}>Receiver Phone</th>
-                    <th onClick={() => handleSort('status')}>Status</th>
+                    <th onClick={() => handleSort('orderNumber')}>
+                      Order Number{' '}
+                      {sortField === 'orderNumber' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('deliverySlotName')}>
+                      Delivery Slot{' '}
+                      {sortField === 'deliverySlotName' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('isExpressDelivery')}>
+                      Express Delivery{' '}
+                      {sortField === 'isExpressDelivery' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('isAddressNeededFromRcvr')}>
+                      Receiver Address{' '}
+                      {sortField === 'isAddressNeededFromRcvr' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('isAddressUpdatedByRcvr')}>
+                      Address Updated by Receiver{' '}
+                      {sortField === 'isAddressUpdatedByRcvr' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('zoneName')}>
+                      Zone{' '}
+                      {sortField === 'zoneName' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('areaName')}>
+                      Area{' '}
+                      {sortField === 'areaName' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('senderName')}>
+                      Sender Name{' '}
+                      {sortField === 'senderName' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('senderPhone')}>
+                      Sender Phone{' '}
+                      {sortField === 'senderPhone' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('recipientPhone')}>
+                      Receiver Phone{' '}
+                      {sortField === 'recipientPhone' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
+                    <th onClick={() => handleSort('status')}>
+                      Status{' '}
+                      {sortField === 'status' && (
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                      )}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
