@@ -12,8 +12,7 @@ import ZonePage from '../pages/ZonePage';
 import AreaPage from '../pages/AreaPage';
 import ShopifyOrderListPage from '../pages/ShopifyOrderListPage';
 import DashboardPage from '../pages/DashboardPage';
-import PackingSlipPage from '../pages/PackingSlipPage';
-import DeliveryStatusSummaryPage from '../pages/DeliveryStatusSummaryPage';  // Make sure this is correctly imported
+
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -25,7 +24,6 @@ const AppRoutes: React.FC = () => (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
-      <Route path="/delivery-status-summary" element={<DeliveryStatusSummaryPage />} />
       <Route path="/orders/list" element={<ShopifyOrderListPage />} />
       <Route path="/orders/detail/:orderId" element={<OrderDetailPage />} />
       <Route path="/customers" element={<CustomerPage />} />
@@ -34,7 +32,6 @@ const AppRoutes: React.FC = () => (
       <Route path="/zone" element={<ZonePage />} />
       <Route path="/area" element={<AreaPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/packing-slip" element={<PackingSlipPage />} />
     </Routes>
   </Router>
 );

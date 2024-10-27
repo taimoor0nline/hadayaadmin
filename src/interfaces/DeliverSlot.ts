@@ -12,6 +12,7 @@ export interface IDeliverySlot {
   priority: number;
   status: IDeliverySlotStatus;
   availableDays: string[];
+  slotClosingTime:string;
   // createdAt?: Date;
   // updatedAt?: Date;
 }

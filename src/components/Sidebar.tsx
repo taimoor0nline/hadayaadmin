@@ -26,18 +26,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, show, handleClose }) => {
           <RiPagesLine />
           Dashboard
         </Link>
-        <Link to="/packing-slip" className="nav-link custom-nav-link">
-          <RiPagesFill />
-          Packing Slip
-        </Link>
         <Link to="/delivery-slot" className="nav-link custom-nav-link">
           <BsGearFill className="me-2" />
           Delivery Slots
         </Link>
-        <Link to="/delivery-status-summary" className="nav-link custom-nav-link"> {/* New route for Delivery Status Summary */}
-          <BsFillPeopleFill className="me-2" />
-          Delivery Status Summary
-        </Link>
+        
         <Link to="/orders/list" className="nav-link custom-nav-link">
           <BsChatDotsFill className="me-2" />
           Orders

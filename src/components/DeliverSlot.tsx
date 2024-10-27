@@ -63,7 +63,7 @@ const DeliverySlot: React.FC = () => {
       setSelectedSlot({
         ...slot,
         startTime: convertToTimeInputFormat(slot.startTime),
-        endTime: convertToTimeInputFormat(slot.endTime)
+        endTime: convertToTimeInputFormat(slot.endTime),
       });
       setSelectedDays(slot?.availableDays || []);
       openModal();
@@ -79,18 +79,24 @@ const DeliverySlot: React.FC = () => {
         startTime: convertToAPITimeFormat(selectedSlot.startTime),
         endTime: convertToAPITimeFormat(selectedSlot.endTime),
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
+        availableDays: selectedDays,
       };
 
-      if (selectedSlot.id) {
-        await updateDeliverySlot(selectedSlot.id, { ...slotData, availableDays: selectedDays });
-      } else {
-        await createDeliverySlot({ ...slotData, availableDays: selectedDays });
+      try {
+        if (selectedSlot.id) {
+          const { id, ...updateData } = slotData;
+          await updateDeliverySlot(selectedSlot.id, updateData);
+        } else {
+          await createDeliverySlot(slotData);
+        }
+        fetchDeliverySlots();
+        setSelectedSlot(null);
+        setSelectedDays([]);
+        closeModal();
+      } catch (error) {
+        console.error("Error creating or updating slot:", error);
       }
-      fetchDeliverySlots();
-      setSelectedSlot(null);
-      setSelectedDays([]);
-      closeModal();
     }
   };
 
@@ -109,10 +115,11 @@ const DeliverySlot: React.FC = () => {
       endDelivery: '',
       startTime: '',
       endTime: '',
+      slotClosingTime: '0',
       capacity: 0,
       priority: 1,
       status: IDeliverySlotStatus.Active,
-      availableDays: []
+      availableDays: [],
     });
     setSelectedDays([]);
     openModal();
@@ -156,17 +163,12 @@ const DeliverySlot: React.FC = () => {
 
   return (
     <Container className="mt-4">
-      <Card className='mb-2' border='0'>
-        <Card.Body>
-          <Button className="mb-3" onClick={handleCreateNew}>
-            <RiAddLine color='white' /> Add Delivery Slot
-          </Button>
-        </Card.Body>
-      </Card>
-
+     
       <Card className="custom-table">
         <Card.Header>
-          <h2>Delivery Slots</h2>
+        <Button className="mb-3" onClick={handleCreateNew}>
+            <RiAddLine color='white' /> Add Delivery Slot
+          </Button>
         </Card.Header>
         <Card.Body>
           <div className="table-responsive">
@@ -180,6 +182,7 @@ const DeliverySlot: React.FC = () => {
                   <th>End Date</th>
                   <th>Start Time</th>
                   <th>End Time</th>
+                  <th>Closing Time</th>
                   <th>Capacity</th>
                   <th>Priority</th>
                   <th>Status</th>
@@ -199,6 +202,7 @@ const DeliverySlot: React.FC = () => {
                     <td>{slot.endDate}</td>
                     <td>{slot.startTime}</td>
                     <td>{slot.endTime}</td>
+                    <td>{slot.slotClosingTime}</td>
                     <td>{slot.capacity}</td>
                     <td>{slot.priority}</td>
                     <td>{slot.status === IDeliverySlotStatus.Active ? 'Active' : 'Inactive'}</td>
@@ -275,6 +279,15 @@ const DeliverySlot: React.FC = () => {
                   className="form-control"
                   value={selectedSlot?.endTime || ''}
                   onChange={(e) => setSelectedSlot({ ...selectedSlot!, endTime: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Closing Time (minutes before end)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={selectedSlot?.slotClosingTime || 0}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, slotClosingTime: e.target.value })}
                 />
               </div>
               <div className="form-group">

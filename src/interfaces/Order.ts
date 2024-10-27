@@ -3,6 +3,12 @@ import { ICustomer } from "./Customer";
 
 export interface IMappedOrder {
   shopifyOrderId: string;
+  orderNumber: number;
+  deliverySlotName: string;
+  isExpressDelivery: string;
+  orderNote: string | null;
+  isAddressNeededFromRcvr: string;
+  isAddressUpdatedByRcvr: string;
   zoneName: string;
   areaName: string;
   senderName: string;
@@ -11,6 +17,8 @@ export interface IMappedOrder {
   recipientPhone: string;
   status: string;
 }
+
+
 
 export interface IOrder {
   id: number;

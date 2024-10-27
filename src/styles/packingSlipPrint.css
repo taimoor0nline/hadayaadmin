@@ -1,0 +1,35 @@
+
+.packing-slip-container {
+    display: none;
+  }
+  
+  @media print {
+    .packing-slip-container {
+      display: block;
+    }
+  
+    .packing-slip-page {
+      width: 105mm;  
+      height: 148mm;
+      page-break-after: always;
+      padding: 10mm;
+      box-sizing: border-box;
+      font-size: 12px;
+      border: 1px solid #ccc;
+    }
+  
+    .packing-slip-page h3 {
+      margin-top: 0;
+      font-size: 16px;
+    }
+  
+    .packing-slip-page p {
+      margin: 5px 0;
+    }
+  
+    .packing-slip-page ul {
+      list-style: none;
+      padding-left: 0;
+    }
+  }
+  

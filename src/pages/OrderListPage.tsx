@@ -9,7 +9,7 @@ const OrderListPage: React.FC = () => {
 
   return (
     <div>
-     <OrderList slot={slot ?? undefined} status={status ?? undefined} />
+     <OrderList/>
     </div>
   );
 };

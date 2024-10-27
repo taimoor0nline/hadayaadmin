@@ -1,5 +1,6 @@
 export interface IDeliveryStatusSummary {
   slotName: string;
+  slotId:string;
   collectingAddress: number;
   confirmed: number;
   preparing: number;
@@ -10,9 +11,11 @@ export interface IDeliveryStatusSummary {
   cancelled: number;
   returned: number;
   total: number;
+  [key: string]: number | string;
 }
 
 export interface IDeliveryStatusSummaryResponse {
-  summaries: IDeliveryStatusSummary[];
+  summaries: { [key: string]: IDeliveryStatusSummary }; 
   totalOrders: number;
 }
+

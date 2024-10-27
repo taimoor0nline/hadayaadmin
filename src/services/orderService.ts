@@ -11,10 +11,9 @@ export interface IOrderSearchParams {
   recipientPhone?: string;
   area?: string;
   senderName?: string;
-  slot?: string;
+  deliverySlotId?: string;  
   status?: string;
 }
-
 
 export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPagedResult<IOrder>> => {
   const {
@@ -26,6 +25,8 @@ export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPaged
     recipientPhone,
     area,
     senderName,
+    deliverySlotId,
+    status,  
   } = params;
 
   const cacheBuster = new Date().getTime();
@@ -39,13 +40,14 @@ export const getOrders = async (params: IOrderSearchParams = {}): Promise<IPaged
       recipientPhone,
       area,
       senderName,
+      deliverySlotId,
+      status,
       _: cacheBuster, 
     },
   });
 
   return response.data;
 };
-
 
 export const getOrderById = async (orderId: string): Promise<IOrder> => {
   const response = await apiService.get(`shopify/${orderId}`);
