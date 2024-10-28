@@ -38,12 +38,12 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
       return;
     }
 
-    if (order && newStatus && selectedSlot && notes) {
+    if (order) {
       try {
         await updateOrderStatus(
-          order?.shopifyOrderId?.toString() || '', // Ensure shopifyOrderId is a string
+          order?.id?.toString() || '', // Ensure shopifyOrderId is a string
           newStatus,
-          selectedSlot.id?.toString() || '',       // Ensure selectedSlot ID is a string
+          selectedSlot?.id?.toString() || '',       // Ensure selectedSlot ID is a string
           notes
         );
         setOrder({ ...order, status: newStatus });  // Update local order state with new status
@@ -170,7 +170,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
           Print
         </Button>
 
-        <Button variant="primary" onClick={handlePrintCard} style={{ padding: '10px 20px' }} >
+        <Button variant="primary" onClick={handlePrintCard} style={{ padding: '10px 20px', marginLeft: 4 }} >
           Print Card
         </Button>
 
@@ -250,6 +250,18 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                 ))}
               </Col>
             </Row>
+
+            <div className='my-4 border-y-black border-[1px]  border-opacity-50'>
+              <h4 className="mt-4 font-bold text-center" >Delivery Information</h4>
+              <div className='flex gap-2'>
+                <b>Delivery Slot : </b>
+                <span>{order?.deliverySlot?.deliverySlotName}</span>
+              </div>
+              <div className='flex gap-2'>
+                <b>Notes : </b>
+                <span>{order?.orderNote}</span>
+              </div>
+            </div>
 
             <h5 className="mt-4">Order Information</h5>
             <Table bordered size="sm">

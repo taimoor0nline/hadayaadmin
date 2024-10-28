@@ -58,7 +58,7 @@ export const getOrderById = async (orderId: string): Promise<IOrder> => {
 
 
 export const updateOrderStatus = async (orderId: string, status: string, selectedSlot: string, notes: string) => {
-  debugger;
+  // debugger;
   try {
     const response = await apiService.put(`shopify/update/status/${orderId}`, { status, deliverySlotId : selectedSlot, orderNote : notes });
     return response.data;

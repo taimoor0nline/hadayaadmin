@@ -163,11 +163,14 @@ const DeliverySlot: React.FC = () => {
 
   return (
     <Container className="mt-4">
-     
+
       <Card className="custom-table">
         <Card.Header>
-        <Button className="mb-3" onClick={handleCreateNew}>
-            <RiAddLine color='white' /> Add Delivery Slot
+          <Button className="mb-3 flex gap-1" onClick={handleCreateNew}>
+            <RiAddLine color='white' />
+            <span>
+              Add Delivery Slot
+            </span>
           </Button>
         </Card.Header>
         <Card.Body>
@@ -192,17 +195,17 @@ const DeliverySlot: React.FC = () => {
               <tbody>
                 {deliverySlots.map((slot) => (
                   <tr key={slot.id}>
-                    <td>
-                      <Button size="sm" onClick={() => handleSelectSlot(slot.id!)}><RiEdit2Fill /></Button>
-                      <Button size="sm" onClick={() => handleDelete(slot.id!)}><RiDeleteBin2Line color="red" /></Button>
+                    <td className='flex gap-1'>
+                      <Button size="sm" className=' hover:bg-slate-700 border-0 rounded-md' onClick={() => handleSelectSlot(slot.id!)}><RiEdit2Fill /></Button>
+                      <Button size="sm" className='bg-red-500 border-0 rounded-md' onClick={() => handleDelete(slot.id!)}><RiDeleteBin2Line color="white" /></Button>
                     </td>
-                    <td>{slot.deliverySlotName}</td>
-                    <td>{slot.deliveryCharges}</td>
-                    <td>{slot.startDate}</td>
-                    <td>{slot.endDate}</td>
-                    <td>{slot.startTime}</td>
-                    <td>{slot.endTime}</td>
-                    <td>{slot.slotClosingTime}</td>
+                    <td style={{ minWidth: 150 }}>{slot.deliverySlotName}</td>
+                    <td style={{ minWidth: 150 }}>{slot.deliveryCharges}</td>
+                    <td style={{ minWidth: 200 }}>{slot.startDate}</td>
+                    <td style={{ minWidth: 200 }}>{slot.endDate}</td>
+                    <td style={{ minWidth: 200 }}>{slot.startTime}</td>
+                    <td style={{ minWidth: 200 }}>{slot.endTime}</td>
+                    <td style={{ minWidth: 150 }}>{slot.slotClosingTime}</td>
                     <td>{slot.capacity}</td>
                     <td>{slot.priority}</td>
                     <td>{slot.status === IDeliverySlotStatus.Active ? 'Active' : 'Inactive'}</td>

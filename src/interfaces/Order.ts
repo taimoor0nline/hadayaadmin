@@ -1,8 +1,10 @@
 import { IArea } from "./Area";
 import { ICustomer } from "./Customer";
+import { IDeliverySlot } from "./DeliverSlot";
 
 export interface IMappedOrder {
   shopifyOrderId: string;
+  orderId : string;
   orderNumber: number;
   deliverySlotName: string;
   isExpressDelivery: string;
@@ -24,6 +26,7 @@ export interface IOrder {
   id: number;
   shopifyOrderId: string;
   senderId: number;
+  orderId: number,
   status: string;
   currentSubtotalPrice: string;
   currentTotalDiscounts: string;
@@ -40,6 +43,7 @@ export interface IOrder {
   contactEmail: string | null;
   phone: string | null;
   areaId: number;
+  deliverySlot: IDeliverySlot;
   sender: ICustomer;
   area: IArea;
   recipients: IRecipient[];

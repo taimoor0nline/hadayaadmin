@@ -16,7 +16,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isMobile, show, handleClose }) => {
   const sidebarContent = (
-    <div className="d-flex flex-column p-3" style={{ width: '250px', height: '100vh', backgroundColor: '#343a40' }}>
+    <div className="d-flex flex-column p-3 sticky top-0" style={{ width: '250px', height: '100vh', backgroundColor: '#343a40' }}>
       <ul className="nav nav-pills flex-column mb-auto">
         <Link to="/" className="nav-link custom-nav-link">
           <House className="me-2" />
@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, show, handleClose }) => {
           <BsGearFill className="me-2" />
           Delivery Slots
         </Link>
-        
+
         <Link to="/orders/list" className="nav-link custom-nav-link">
           <BsChatDotsFill className="me-2" />
           Orders

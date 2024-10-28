@@ -38,8 +38,10 @@ const OrderList: React.FC = () => {
 
     try {
       const result = await getOrders(params);
+      console.log('order result : ', result.data);
       const mappedOrders: IMappedOrder[] = result.data.map((order: any) => ({
         shopifyOrderId: order.shopifyOrderId || 'N/A',
+        orderId: order.orderId || '',
         orderNumber: order.orderNumber || 0,
         deliverySlotName: order.deliverySlotName || 'N/A',
         isExpressDelivery: order.isExpressDelivery ? 'Yes' : 'No',
@@ -411,7 +413,7 @@ const OrderList: React.FC = () => {
                   {orders.map((order, index) => (
                     <tr key={order.shopifyOrderId}>
                       <td>{(currentPage - 1) * 10 + index + 1}</td>
-                      <td>{order.orderNumber}</td>
+                      <td style={{ minWidth: 200 }}>{order.orderNumber}</td>
                       <td>{order.deliverySlotName}</td>
                       <td>{order.isExpressDelivery}</td>
                       <td>{order.isAddressNeededFromRcvr}</td>
@@ -425,7 +427,7 @@ const OrderList: React.FC = () => {
                       <td>
                         <button
                           className="btn btn-sm btn-primary"
-                          onClick={() => (window.location.href = `/orders/detail/${order.shopifyOrderId}`)}
+                          onClick={() => (window.location.href = `/orders/detail/${order.orderId}`)}
                         >
                           <FontAwesomeIcon icon={faEye} />
                         </button>
