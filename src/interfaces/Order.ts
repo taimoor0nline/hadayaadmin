@@ -30,6 +30,7 @@ export interface IOrder {
   currentTotalPrice: string;
   currentTotalTax: string;
   currency: string;
+  orderNote : string;
   orderNumber: number;
   createdAt: string;
   updatedAt: string;
@@ -63,6 +64,7 @@ export interface IRecipient {
 
 
 export interface IOrderItem {
+  picture: string | undefined;
   id: number;
   orderId: number;
   shopifyItemId: string;

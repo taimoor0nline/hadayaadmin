@@ -88,18 +88,53 @@ const OrderList: React.FC = () => {
               <link rel="stylesheet" type="text/css" href="${process.env.PUBLIC_URL}/styles/packingSlipPrint.css">
               <style>
                 @media print {
-                  .packing-slip-page {
+                  @page {
+                    size: 105mm 148mm;
+                    margin: 0; /* Remove default margins */
+                  }
+                  body, html {
+                    margin: 0;
+                    padding: 0;
                     width: 105mm;
-                    height: 148mm;
-                    page-break-after: always;
-                    padding: 10mm;
+                    height: auto;
+                  }
+                  .packing-slip-page {
+                    width: 100%;
+                    padding: 8mm;
                     box-sizing: border-box;
-                    font-size: 12px;
+                    font-size: 11px;
                     border: 1px solid #ccc;
+                    line-height: 1.4; /* Adjust line height for better readability */
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px; /* Add space between elements to prevent overlap */
+                  }
+                  h3 {
+                    margin: 0 0 6px;
+                    font-size: 14px;
+                    text-align: center;
+                  }
+                  p {
+                    margin: 0;
+                  }
+                  .product-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 8px;
+                  }
+                  .product-table th, .product-table td {
+                    border: 1px solid #ddd;
+                    padding: 4px;
+                    font-size: 10px;
+                    word-wrap: break-word;
+                  }
+                  .product-table th {
+                    background-color: #f2f2f2;
+                    font-weight: bold;
                   }
                   .product-image {
-                    max-width: 50px;
-                    max-height: 50px;
+                    max-width: 40px;
+                    max-height: 40px;
                     object-fit: cover;
                   }
                 }
@@ -112,24 +147,36 @@ const OrderList: React.FC = () => {
           packingSlipWindow.document.write(`
             <div class="packing-slip-page">
               <h3>Packing Slip</h3>
-              <p>Order ID: ${order.orderId}</p>
-              <p>Receiver Name: ${order.receiverName}</p>
-              <p>Receiver Phone: ${order.receiverPhone}</p>
-              <p>Receiver Address: ${order.receiverAddress}</p>
-              <p>Zone: ${order.zone}</p>
-              <p>Area: ${order.area}</p>
+              <p><strong>Order ID:</strong> ${order.orderId}</p>
+              <p><strong>Receiver Name:</strong> ${order.receiverName}</p>
+              <p><strong>Receiver Phone:</strong> ${order.receiverPhone}</p>
+              <p><strong>Receiver Address:</strong> ${order.receiverAddress}</p>
+              <p><strong>Zone:</strong> ${order.zone}</p>
+              <p><strong>Area:</strong> ${order.area}</p>
               <h4>Products:</h4>
-              <ul>
-                ${order.products.map(product => `
-                  <li>
-                    <strong>${product.productName}</strong> - Qty: ${product.quantity}<br />
-                    ${Array.isArray(product.productPicture)
-                      ? product.productPicture.map(pic => `<img src="${pic}" alt="${product.productName}" class="product-image" />`).join('')
-                      : `<img src="${product.productPicture}" alt="${product.productName}" class="product-image" />`
-                    }
-                  </li>
-                `).join('')}
-              </ul>
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Image</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${order.products.map(product => `
+                    <tr>
+                      <td>${product.productName}</td>
+                      <td>${product.quantity}</td>
+                      <td>
+                        ${Array.isArray(product.productPicture)
+              ? product.productPicture.map(pic => `<img src="${pic}" alt="${product.productName}" class="product-image" />`).join('')
+              : `<img src="${product.productPicture}" alt="${product.productName}" class="product-image" />`
+            }
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
             </div>
           `);
         });
@@ -146,11 +193,95 @@ const OrderList: React.FC = () => {
           packingSlipWindow.close();
         }, 500);
       }
+
+
     } catch (error) {
       console.error('Error fetching packing slips:', error);
       alert('Failed to fetch packing slips');
     }
   };
+
+
+  const handlePrintCards = async () => {
+    if (!deliverySlotId) return alert('Please select a slot to print packing slips.');
+
+    try {
+      const response = await getPackingSlipBySlotId(deliverySlotId);
+      const packingSlips = response.orders;
+
+      const packingSlipWindow = window.open('', 'PRINT', 'width=800,height=600');
+      if (packingSlipWindow) {
+        packingSlipWindow.document.write(`
+                <html>
+                    <head>
+                        <style>
+                            @media print {
+                                body {
+                                    margin: 0;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    flex-direction: column;
+                                }
+                                .print-card {
+                                    width: 100%;
+                                    height: 100%;
+                                    box-sizing: border-box;
+                                    padding: 20px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center;
+                                    position: relative;
+                                    page-break-after: always;
+                                }
+                                .order-id {
+                                    font-size: 14px;
+                                    font-weight: bold;
+                                    position: absolute;
+                                    top: 10px;
+                                    right: 10px;
+                                }
+                                .order-note {
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    margin-top: 20px;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+            `);
+
+        packingSlips.forEach((order) => {
+          packingSlipWindow.document.write(`
+                    <div class="print-card">
+                        <div class="order-id">Order ID: ${order?.orderId}</div>
+                        <div class="order-note">${order?.orderNote}</div>
+                    </div>
+                `);
+        });
+
+        packingSlipWindow.document.write(`
+                    </body>
+                </html>
+            `);
+
+        packingSlipWindow.document.close();
+
+        setTimeout(() => {
+          packingSlipWindow.print();
+          packingSlipWindow.close();
+        }, 500);
+      }
+
+    } catch (error) {
+      console.error('Error fetching packing slips:', error);
+      alert('Failed to fetch packing slips');
+    }
+  };
+
 
   return (
     <div className="d-flex">
@@ -164,6 +295,14 @@ const OrderList: React.FC = () => {
                 onClick={handlePrintPackingSlip}
               >
                 Print Packing Slip
+              </button>
+
+              <button
+                className='btn btn-primary pull-right ml-4'
+                id='print-packing-slip'
+                onClick={handlePrintCards}
+              >
+                Print Cards
               </button>
             </div>
             <div className="card-body">
