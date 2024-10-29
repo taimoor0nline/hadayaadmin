@@ -5,6 +5,7 @@ import { Button, Modal, Form, Table, Row, Col, Card } from 'react-bootstrap';
 import '../styles/order-detail.css';
 import { getDeliverySlots } from '../services/deliverySlotService';
 import { IDeliverySlot } from '../interfaces/DeliverSlot';
+import moment from 'moment';
 
 interface OrderDetailProps {
   orderId: string;
@@ -26,7 +27,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
       if (orderId) {
         const data = await getOrderById(orderId);
         setOrder(data);
-        // console.log('order details : ', data);
+        console.log('order details : ', data);
       }
     };
     fetchOrder();
@@ -282,30 +283,56 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
             </Table>
 
             <h5 className="mt-4">Items</h5>
-            <Table bordered size="sm">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Title</th>
-                  <th>SKU</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Sub-total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.items.map(item => (
-                  <tr key={item.id}>
-                    <td><img src={item?.picture} alt={item.title} height={40} width={60} style={{ objectFit: 'cover' }} /></td>
-                    <td>{item.title}</td>
-                    <td>{item.sku || "N/A"}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.price} {order.currency}</td>
-                    <td>{item.quantity * parseFloat(item.price)} {order.currency}</td>
+            <div className='max-h-[400px] overflow-y-scroll'>
+              <Table bordered size="sm">
+                <thead className='sticky top-0'>
+                  <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>SKU</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Sub-total</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {order.items.map(item => (
+                    <tr key={item.id}>
+                      <td><img src={item?.picture} alt={item.title} height={40} width={60} style={{ objectFit: 'cover' }} /></td>
+                      <td>{item.title}</td>
+                      <td>{item.sku || "N/A"}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.price} {order.currency}</td>
+                      <td>{item.quantity * parseFloat(item.price)} {order.currency}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+
+            <div className='my-4 border-[1px] border-opacity-50 '>
+              <h6>Notes Info</h6>
+              <div className='max-h-[400px] overflow-y-scroll'>
+                <Table bordered size="sm">
+                  <thead className='sticky top-0'>
+                    <tr>
+                      <th>Order Status</th>
+                      <th>Order Notes</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.notes.map((note: { order: React.Key | null | undefined; orderStatus: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; orderNote: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; createdAt: moment.MomentInput; }) => (
+                      <tr key={note.order}>
+                        <td>{note.orderStatus}</td>
+                        <td>{note.orderNote}</td>
+                        <td>{moment(note.createdAt).calendar()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            </div>
 
             <h5 className="mt-4">Order Totals</h5>
             <Table bordered size="sm">

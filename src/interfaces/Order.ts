@@ -28,6 +28,7 @@ export interface IOrder {
   senderId: number;
   orderId: number,
   status: string;
+  notes :  any;
   currentSubtotalPrice: string;
   currentTotalDiscounts: string;
   currentTotalPrice: string;
