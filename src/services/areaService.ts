@@ -29,7 +29,7 @@ export const createArea = async (area: IAreaPayload): Promise<IArea> => {
 };
 
 export const updateArea = async (id: number, area: IAreaPayload): Promise<void> => {
-  await apiService.put(`/areas/detail/${id}`, area);
+  await apiService.put(`/areas/update/${id}`, area);
 };
 
 export const deleteArea = async (id: number): Promise<void> => {

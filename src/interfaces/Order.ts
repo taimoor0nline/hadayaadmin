@@ -45,7 +45,10 @@ export interface IOrder {
   phone: string | null;
   areaId: number;
   deliverySlot: IDeliverySlot;
+  deliverySlotId:number | null;
   sender: ICustomer;
+  senderMsg: string;
+  senderMsgUrl:string;
   area: IArea;
   recipients: IRecipient[];
   items: IOrderItem[];

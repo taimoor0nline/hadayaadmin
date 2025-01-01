@@ -21,7 +21,7 @@ export const createZone = async (zone: IZone): Promise<IZone> => {
 };
 
 export const updateZone = async (id: number, zone: IZone): Promise<void> => {
-  await apiService.put(`/zones/detail/${id}`, zone);
+  await apiService.put(`/zones/update/${id}`, zone);
 };
 
 export const deleteZone = async (id: number): Promise<void> => {

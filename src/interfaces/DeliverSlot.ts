@@ -10,6 +10,7 @@ export interface IDeliverySlot {
   endTime: string;
   capacity: number;
   priority: number;
+  isExpress: boolean;
   status: IDeliverySlotStatus;
   availableDays: string[];
   slotClosingTime:string;

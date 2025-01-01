@@ -29,9 +29,14 @@ const Zone: React.FC = () => {
   };
 
   const handleSelectZone = (zone: IZone) => {
-    setSelectedZone(zone);
+    const selectedZone: IZone = {
+      id: zone.id,
+      name: zone.name,
+    };
+    setSelectedZone(selectedZone);
     openModal();
   };
+  
 
   const handleCreateOrUpdate = async () => {
     if (selectedZone?.id) {

@@ -46,7 +46,7 @@ const OrderList: React.FC = () => {
         deliverySlotName: order.deliverySlotName || 'N/A',
         isExpressDelivery: order.isExpressDelivery ? 'Yes' : 'No',
         orderNote: order.orderNote || 'N/A',
-        isAddressNeededFromRcvr: order.isAddressNeededFromRcvr ? 'Yes' : 'No',
+        isAddressNeededFromRcvr: order.isAddressNeededFromRcvr === 'false' ? 'Yes' : 'No',
         isAddressUpdatedByRcvr: order.isAddressUpdatedByRcvr ? 'Yes' : 'No',
         zoneName: order.zoneName || 'N/A',
         areaName: order.areaName || 'N/A',
@@ -67,6 +67,7 @@ const OrderList: React.FC = () => {
     const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
     setSortOrder(newOrder);
+    fetchOrders();
   };
 
   const handleSearch = () => {
@@ -102,6 +103,7 @@ const OrderList: React.FC = () => {
                   }
                   .packing-slip-page {
                     width: 100%;
+                    page-break-after: always;
                     padding: 8mm;
                     box-sizing: border-box;
                     font-size: 11px;
@@ -343,7 +345,7 @@ const OrderList: React.FC = () => {
                     <th onClick={() => handleSort('orderNumber')}>
                       Order Number{' '}
                       {sortField === 'orderNumber' && (
-                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortUp : faSortDown} />
+                        <FontAwesomeIcon icon={sortOrder === 'desc' ? faSortUp : faSortDown} />
                       )}
                     </th>
                     <th onClick={() => handleSort('deliverySlotName')}>
@@ -427,7 +429,7 @@ const OrderList: React.FC = () => {
                       <td>
                         <button
                           className="btn btn-sm btn-primary"
-                          onClick={() => (window.location.href = `/orders/detail/${order.orderId}`)}
+                          onClick={() => (window.location.href = `/orders/detail/${order.shopifyOrderId }`)}
                         >
                           <FontAwesomeIcon icon={faEye} />
                         </button>

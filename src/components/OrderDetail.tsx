@@ -11,11 +11,11 @@ interface OrderDetailProps {
   orderId: string;
 }
 
+
 const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
   const [order, setOrder] = useState<IOrder | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [newStatus, setNewStatus] = useState<string>('');
-
   const [notes, setNotes] = useState('');
   const [notesError, setNotesError] = useState(false);
   const [deliverySlots, setDeliverySlots] = useState<IDeliverySlot[]>([]);
@@ -25,13 +25,29 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
   useEffect(() => {
     const fetchOrder = async () => {
       if (orderId) {
-        const data = await getOrderById(orderId);
-        setOrder(data);
-        console.log('order details : ', data);
+        try {
+          const data = await getOrderById(orderId);
+          setOrder(data);
+          setNotes(data?.notes?.[data.notes.length - 1]?.orderNote || 'No notes available');
+          const response = await getDeliverySlots();
+          // console.log(response);
+          setDeliverySlots(response?.data || []); 
+          setLoadingSlots(false);
+          setSelectedSlot(response.data.find(slot => slot.id === data.deliverySlotId) || null);
+
+  
+          setNewStatus(data?.status || '');
+        } catch (error) {
+          console.error("Error fetching order or delivery slots:", error);
+          setLoadingSlots(false); 
+        }
       }
     };
+  
     fetchOrder();
   }, [orderId]);
+  
+
 
   const handleStatusChange = async () => {
     if (!notes.trim()) {
@@ -42,13 +58,15 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
     if (order) {
       try {
         await updateOrderStatus(
-          order?.id?.toString() || '', // Ensure shopifyOrderId is a string
+          order?.shopifyOrderId?.toString() || '', // Ensure shopifyOrderId is a string
           newStatus,
           selectedSlot?.id?.toString() || '',       // Ensure selectedSlot ID is a string
           notes
         );
         setOrder({ ...order, status: newStatus });  // Update local order state with new status
+        setNotes(notes);
         setShowModal(false);
+        window.location.reload();
       } catch (error) {
         console.error("Error updating order status:", error);
       }
@@ -57,21 +75,36 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
     }
   };
 
-  useEffect(() => {
-    if (showModal) {
-      const fetchDeliverySlots = async () => {
-        try {
-          const response = await getDeliverySlots();
-          setDeliverySlots(response?.data);
-          setLoadingSlots(false);
-        } catch (error) {
-          console.error('Error fetching delivery slots:', error);
-          setLoadingSlots(false);
-        }
-      };
-      fetchDeliverySlots();
-    }
-  }, [showModal]);
+  // const orderInfo = {
+  //   status: 'Confirmed',
+  //   deliverySlotId: 2, // Example ID
+  // };
+
+  // useEffect(() => {
+  //   if (showModal) {
+  //     const fetchDeliverySlots = async () => {
+  //       try {
+
+  //         const response = await getDeliverySlots();
+  //         setDeliverySlots(response?.data);
+  //         setLoadingSlots(false);
+
+  //         // Preselect the delivery slot if it exists in order information
+  //         if (orderInfo?.deliverySlotId) {
+  //           const preselectedSlot = response?.data.find(slot => slot.id === orderInfo.deliverySlotId);
+  //           setSelectedSlot(preselectedSlot || null);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error fetching delivery slots:', error);
+  //         setLoadingSlots(false);
+  //       }
+  //     };
+
+  //     // Set the initial values for the status and notes
+  //     setNewStatus(orderInfo?.status || '');
+  //     fetchDeliverySlots();
+  //   }
+  // }, [showModal, orderInfo]);
 
   // Calculate Subtotal Dynamically
   const calculateSubtotal = () => {
@@ -121,7 +154,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
         <body>
           <div class="print-card">
             <div class="order-id">Order ID: ${order?.shopifyOrderId}</div>
-            <div class="order-note">${order?.orderNote}</div>
+            <div class="order-note">${order?.senderMsg}</div>
           </div>
         </body>
       </html>
@@ -163,7 +196,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
     <div className="order-detail container mt-4">
 
       <div className="d-flex justify-content-end mb-3 d-print-none">
-        <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+        <Button variant="primary" onClick={() =>setShowModal(true)} style={{ marginRight: '10px', padding: '10px 20px' }}>
           Update Status
         </Button>
 
@@ -208,11 +241,11 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                   <tbody>
                     <tr>
                       <td><strong>Area:</strong></td>
-                      <td>{order.area.name}</td>
+                      <td>{order.area?.name || ""}</td>
                     </tr>
                     <tr>
                       <td><strong>Zone:</strong></td>
-                      <td>{order.area.zone.name}</td>
+                      <td>{order.area?.zone?.name || ""}</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -238,13 +271,13 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                         <td><strong>Address:</strong></td>
                         <td>{recipient.recipientAddress}</td>
                         <td><strong>Delivery Slot:</strong></td>
-                        <td>{recipient.deliverySlot}</td>
+                        <td>{order.deliverySlot.deliverySlotName}</td>
                       </tr>
                       <tr>
                         <td><strong>Delivery Status:</strong></td>
-                        <td>{recipient.deliveryStatus}</td>
+                        <td>{order.status}</td>
                         <td><strong>Message:</strong></td>
-                        <td>{recipient.message}</td>
+                        <td>{order.senderMsg?.toString()}</td>
                       </tr>
                     </tbody>
                   </Table>
@@ -260,7 +293,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
               </div>
               <div className='flex gap-2'>
                 <b>Notes : </b>
-                <span>{order?.orderNote}</span>
+                <span>{order?.orderNote || 'No notes available'}</span>
               </div>
             </div>
 
@@ -370,15 +403,15 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
             <Form.Group controlId="status">
               <Form.Label>New Status</Form.Label>
               <Form.Control as="select" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-                <option value="collecting-address">Collecting Address</option>
-                <option value="ordered">Ordered</option>
-                <option value="preparing">Preparing</option>
-                <option value="ready">Ready</option>
-                <option value="picked">Picked</option>
-                <option value="delivering">Delivering</option>
-                <option value="delivered">Delivered</option>
-                <option value="return">Return</option>
-                <option value="cancel">Cancel</option>
+                <option value="CollectingAddress">Collecting Address</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Ready">Ready</option>
+                <option value="Picked">Picked</option>
+                <option value="Delivering">Delivering</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Returned">Return</option>
+                <option value="Cancelled">Cancel</option>
               </Form.Control>
             </Form.Group>
 

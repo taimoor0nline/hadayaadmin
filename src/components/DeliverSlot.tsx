@@ -118,6 +118,7 @@ const DeliverySlot: React.FC = () => {
       slotClosingTime: '0',
       capacity: 0,
       priority: 1,
+      isExpress : false,
       status: IDeliverySlotStatus.Active,
       availableDays: [],
     });
@@ -185,6 +186,8 @@ const DeliverySlot: React.FC = () => {
                   <th>End Date</th>
                   <th>Start Time</th>
                   <th>End Time</th>
+                  <th>Start Delivery</th>
+                  <th>End Delivery</th>
                   <th>Closing Time</th>
                   <th>Capacity</th>
                   <th>Priority</th>
@@ -205,6 +208,8 @@ const DeliverySlot: React.FC = () => {
                     <td style={{ minWidth: 200 }}>{slot.endDate}</td>
                     <td style={{ minWidth: 200 }}>{slot.startTime}</td>
                     <td style={{ minWidth: 200 }}>{slot.endTime}</td>
+                    <td style={{ minWidth: 200 }}>{slot.startDelivery}</td>
+                    <td style={{ minWidth: 200 }}>{slot.endDelivery}</td>
                     <td style={{ minWidth: 150 }}>{slot.slotClosingTime}</td>
                     <td>{slot.capacity}</td>
                     <td>{slot.priority}</td>
@@ -267,6 +272,24 @@ const DeliverySlot: React.FC = () => {
                 />
               </div>
               <div className="form-group">
+                <label>Start Delivery</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={selectedSlot?.startDelivery || ''}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, startDelivery: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>End Delivery</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={selectedSlot?.endDelivery || ''}
+                  onChange={(e) => setSelectedSlot({ ...selectedSlot!, endDelivery: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
                 <label>Start Time</label>
                 <input
                   type="time"
@@ -284,6 +307,7 @@ const DeliverySlot: React.FC = () => {
                   onChange={(e) => setSelectedSlot({ ...selectedSlot!, endTime: e.target.value })}
                 />
               </div>
+              
               <div className="form-group">
                 <label>Closing Time (minutes before end)</label>
                 <input
@@ -321,6 +345,17 @@ const DeliverySlot: React.FC = () => {
                   <option value={IDeliverySlotStatus.Active}>Active</option>
                   <option value={IDeliverySlotStatus.Inactive}>Inactive</option>
                 </select>
+              </div>
+              <div className="form-group mt-4">
+                    <div className="form-check form-switch d-flex justify-content-between">
+                      <label className="form-check-label">Express Delivery</label>
+                      <input
+                        type="checkbox"
+                        className="form-check-input"  checked={Boolean(selectedSlot?.isExpress)} 
+                        onChange={(e) =>
+                          setSelectedSlot({ ...selectedSlot!, isExpress: e.target.checked ? true : false})}
+                         />
+                    </div>
               </div>
               <div className="form-group mt-4">
                 <b>Available Days</b>
