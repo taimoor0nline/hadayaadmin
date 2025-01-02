@@ -71,7 +71,7 @@ export const updateOrderStatus = async (orderId: string, status: string, selecte
 
 export const updateRecipientDetails = async (orderId: string, recipientPhone?: string, recipientAddress?: string) => {
   try {
-    const response = await apiService.put(`shopify/update/recipient/${orderId}`, {
+    const response = await apiService.put(`shopify/update/address/${orderId}`, {
       recipientPhone,
       recipientAddress,
     });

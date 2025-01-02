@@ -12,6 +12,7 @@ import ZonePage from '../pages/ZonePage';
 import AreaPage from '../pages/AreaPage';
 import ShopifyOrderListPage from '../pages/ShopifyOrderListPage';
 import DashboardPage from '../pages/DashboardPage';
+import UpdateReceiverPage from '../pages/UpdateReceiverPage';
 
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
@@ -32,6 +33,7 @@ const AppRoutes: React.FC = () => (
       <Route path="/zone" element={<ZonePage />} />
       <Route path="/area" element={<AreaPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/UpdateReceiver/:orderId" element={<UpdateReceiverPage />} />
     </Routes>
   </Router>
 );

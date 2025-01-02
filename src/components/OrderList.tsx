@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from './Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit,faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { IMappedOrder } from '../interfaces/Order';
 import { useSearchParams } from 'react-router-dom';
 import { getOrders, IOrderSearchParams } from '../services/orderService';
@@ -48,6 +48,7 @@ const OrderList: React.FC = () => {
         orderNote: order.orderNote || 'N/A',
         isAddressNeededFromRcvr: order.isAddressNeededFromRcvr === 'false' ? 'Yes' : 'No',
         isAddressUpdatedByRcvr: order.isAddressUpdatedByRcvr ? 'Yes' : 'No',
+        keepIdentitySecret: order.keepIdentitySecret ? 'Yes' : 'No',
         zoneName: order.zoneName || 'N/A',
         areaName: order.areaName || 'N/A',
         senderName: order.senderName || 'N/A',
@@ -428,10 +429,15 @@ const OrderList: React.FC = () => {
                       <td>{order.status}</td>
                       <td>
                         <button
-                          className="btn btn-sm btn-primary"
+                          className="btn btn-sm btn-primary d-inline p-2"
                           onClick={() => (window.location.href = `/orders/detail/${order.shopifyOrderId }`)}
                         >
                           <FontAwesomeIcon icon={faEye} />
+                        </button><button
+                          className="btn btn-sm btn-primary d-inline p-2"
+                          onClick={() => (window.location.href = `/UpdateReceiver/${order.shopifyOrderId }`)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
                         </button>
                       </td>
                     </tr>

@@ -11,6 +11,7 @@ export interface IMappedOrder {
   orderNote: string | null;
   isAddressNeededFromRcvr: string;
   isAddressUpdatedByRcvr: string;
+  keepIdentitySecret : string;
   zoneName: string;
   areaName: string;
   senderName: string;
