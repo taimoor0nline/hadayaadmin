@@ -433,11 +433,6 @@ const OrderList: React.FC = () => {
                           onClick={() => (window.location.href = `/orders/detail/${order.shopifyOrderId }`)}
                         >
                           <FontAwesomeIcon icon={faEye} />
-                        </button><button
-                          className="btn btn-sm btn-primary d-inline p-2"
-                          onClick={() => (window.location.href = `/UpdateReceiver/${order.shopifyOrderId }`)}
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
                         </button>
                       </td>
                     </tr>
