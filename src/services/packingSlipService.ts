@@ -5,3 +5,4 @@ export const getPackingSlipBySlotId = async (slotId: string): Promise<IOrderPack
   const response = await apiService.get(`/packing-slip/by-slot-id/${slotId}`);
   return response.data;
 };
+

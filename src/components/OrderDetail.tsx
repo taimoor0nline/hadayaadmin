@@ -31,22 +31,22 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
           setNotes(data?.notes?.[data.notes.length - 1]?.orderNote || 'No notes available');
           const response = await getDeliverySlots();
           // console.log(response);
-          setDeliverySlots(response?.data || []); 
+          setDeliverySlots(response?.data || []);
           setLoadingSlots(false);
           setSelectedSlot(response.data.find(slot => slot.id === data.deliverySlotId) || null);
 
-  
+
           setNewStatus(data?.status || '');
         } catch (error) {
           console.error("Error fetching order or delivery slots:", error);
-          setLoadingSlots(false); 
+          setLoadingSlots(false);
         }
       }
     };
-  
+
     fetchOrder();
   }, [orderId]);
-  
+
 
 
   const handleStatusChange = async () => {
@@ -168,6 +168,127 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
     }, 500);
   };
 
+  const handlePrintSinglePackingSlip = () => {
+    if (!order) {
+      alert('Order data is not available to print the packing slip.');
+      return;
+    }
+
+    const packingSlipWindow = window.open('', 'PRINT', 'width=800,height=600');
+    if (packingSlipWindow) {
+      packingSlipWindow.document.write(`
+        <html>
+          <head>
+            <title>Packing Slip</title>
+            <link rel="stylesheet" type="text/css" href="${process.env.PUBLIC_URL}/styles/packingSlipPrint.css">
+            <style>
+            @media print {
+              @page {
+                size: 105mm 148mm;
+                margin: 0;
+              }
+              body, html {
+                margin: 0;
+                padding: 0;
+                width: 105mm;
+                height: auto;
+              }
+              .packing-slip-page {
+                width: 100%;
+                page-break-after: avoid; /* Avoid breaking the page after each slip */
+                padding: 8mm;
+                box-sizing: border-box;
+                font-size: 11px;
+                border: 1px solid #ccc;
+                line-height: 1.4;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+              }
+              h3 {
+                margin: 0 0 6px;
+                font-size: 14px;
+                text-align: center;
+              }
+              p {
+                margin: 0;
+              }
+              .product-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+              }
+              .product-table th, .product-table td {
+                border: 1px solid #ddd;
+                padding: 4px;
+                font-size: 10px;
+                word-wrap: break-word;
+              }
+              .product-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+              }
+              .product-image {
+                max-width: 40px;
+                max-height: 40px;
+                object-fit: cover;
+              }
+              /* Avoid blank page issues */
+              html, body {
+                height: auto !important;
+                overflow: hidden;
+              }
+              /* Fix blank pages in some browsers */
+              .packing-slip-page:last-child {
+                page-break-after: auto !important;
+              }
+            }
+          </style>
+
+          </head>
+          <body>
+            <div class="packing-slip-page">
+              <h3>Packing Slip</h3>
+              <p><strong>Order ID:</strong> ${order.shopifyOrderId}</p>
+              <p><strong>Receiver Name:</strong> ${order.recipients[0]?.recipientName || 'N/A'}</p>
+              <p><strong>Receiver Phone:</strong> ${order.recipients[0]?.recipientPhone || 'N/A'}</p>
+              <p><strong>Receiver Address:</strong> ${order.recipients[0]?.recipientAddress || 'N/A'}</p>
+              <p><strong>Zone:</strong> ${order.area?.zone?.name || 'N/A'}</p>
+              <p><strong>Area:</strong> ${order.area?.name || 'N/A'}</p>
+              <h4>Products:</h4>
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Image</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${order.items.map(item => `
+                    <tr>
+                      <td>${item.title}</td>
+                      <td>${item.quantity}</td>
+                      <td>
+                        ${item.picture ? `<img src="${item.picture}" alt="${item.title}" class="product-image" />` : 'No Image'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </body>
+        </html>
+      `);
+
+      packingSlipWindow.document.close();
+
+      setTimeout(() => {
+        packingSlipWindow.print();
+        packingSlipWindow.close();
+      }, 500);
+    }
+  };
 
   if (!order) return <div>Loading...</div>;
 
@@ -196,7 +317,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
     <div className="order-detail container mt-4">
 
       <div className="d-flex justify-content-end mb-3 d-print-none">
-        <Button variant="primary" onClick={() =>setShowModal(true)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+        <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginRight: '10px', padding: '10px 20px' }}>
           Update Status
         </Button>
 
@@ -206,6 +327,14 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
 
         <Button variant="primary" onClick={handlePrintCard} style={{ padding: '10px 20px', marginLeft: 4 }} >
           Print Card
+        </Button>
+
+        <Button
+          variant="primary"
+          onClick={() => handlePrintSinglePackingSlip()}
+          style={{ padding: '10px 20px', marginLeft: 4 }}
+        >
+          Print Packing Slip
         </Button>
 
       </div>

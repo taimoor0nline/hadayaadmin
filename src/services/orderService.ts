@@ -81,3 +81,17 @@ export const updateRecipientDetails = async (orderId: string, recipientPhone?: s
     throw error;
   }
 };
+
+export const updateReceiverAddress = async (orderId: string, address: string) => {
+  try {
+    const response = await apiService.put(`shopify/update/address/${orderId}`, {
+      recipientAddress: address, // Map 'address' to 'recipientAddress'
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating receiver address:', error);
+    throw error;
+  }
+};
+
+
