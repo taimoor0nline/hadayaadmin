@@ -30,6 +30,7 @@ export interface IOrder {
   orderId: number,
   status: string;
   notes :  any;
+  keepIdentitySecret: boolean;
   currentSubtotalPrice: string;
   currentTotalDiscounts: string;
   currentTotalPrice: string;

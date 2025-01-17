@@ -346,7 +346,12 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
             <Row className="mb-3">
 
               <Col md={6}>
-                <h5>Sender Details</h5>
+                <h5>Sender Details {order.keepIdentitySecret ? (
+                  <span style={{ color: "red", fontWeight: "bold" }}>
+                    🔒 Keep Identity Secret.
+                  </span>
+                ) : ''} </h5>
+                
                 <Table bordered size="sm">
                   <tbody>
                     <tr>

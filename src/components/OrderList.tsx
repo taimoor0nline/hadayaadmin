@@ -38,7 +38,6 @@ const OrderList: React.FC = () => {
 
     try {
       const result = await getOrders(params);
-      console.log('order result : ', result.data);
       const mappedOrders: IMappedOrder[] = result.data.map((order: any) => ({
         shopifyOrderId: order.shopifyOrderId || 'N/A',
         orderId: order.orderId || '',
